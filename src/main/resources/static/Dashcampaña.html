@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Campañas</title>
+  <link rel="stylesheet" href="../static/CSS/Dashboard-estilos/campaña.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="#"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="../static/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="../static/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="../static/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <div class="spacer"></div>
+    <a href="../static/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+
+  <div class="content">
+    <h1>Gestión de Campañas</h1>
+
+
+    <div class="filter-bar">
+      <input type="text" placeholder="Buscar por nombre, campaña o cliente...">
+      <input type="date" placeholder="Fecha inicio">
+      <input type="date" placeholder="Fecha fin">
+      <button>Buscar</button>
+    </div>
+
+
+    <div class="top-section">
+      <div class="left-section">
+        <div class="edit-form">
+          <h2>Registrar / Editar Campaña</h2>
+          <div class="form-grid">
+            <div class="form-row"><label>ID Campaña</label><input type="text" placeholder="C001"></div>
+            <div class="form-row"><label>ID Proyecto</label><input type="text" placeholder="P100"></div>
+            <div class="form-row"><label>ID Cliente</label><input type="text" placeholder="CL200"></div>
+            <div class="form-row"><label>Nombre</label><input type="text" placeholder="Campaña Primavera"></div>
+            <div class="form-row"><label>Descripción</label><input type="text" placeholder="Campaña de temporada floral"></div>
+            <div class="form-row"><label>Fecha Inicio</label><input type="date"></div>
+            <div class="form-row"><label>Fecha Fin</label><input type="date"></div>
+            <div class="form-row"><label>Presupuesto</label><input type="number" placeholder="1500"></div>
+            <div class="form-row"><label>Estado</label>
+              <select>
+                <option>Activa</option>
+                <option>Pausada</option>
+                <option>Finalizada</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-buttons">
+            <button class="save">Guardar</button>
+            <button class="cancel">Cancelar</button>
+            <button class="new">Nuevo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="insight-panel">
+          <h3>Estadísticas de Campañas</h3>
+          <div class="circle-chart">
+            <div class="inner-circle"><span>82%</span></div>
+          </div>
+          <p class="chart-label">Campañas activas</p>
+          <div class="stats">
+            <div class="stat"><h4>48</h4><p>Totales</p></div>
+            <div class="stat"><h4>39</h4><p>Activas</p></div>
+            <div class="stat"><h4>9</h4><p>Finalizadas</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Campaña</th>
+            <th>ID Proyecto</th>
+            <th>ID Cliente</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Presupuesto</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>C001</td><td>P001</td><td>CL001</td><td>Primavera</td><td>Campaña floral</td><td>2025-03-10</td><td>2025-05-30</td><td>$1500</td><td>Activa</td><td><button class="edit"><i class="fa-solid fa-pen"></i></button><button class="delete"><i class="fa-solid fa-trash"></i></button></td></tr>
+          <tr><td>C002</td><td>P002</td><td>CL002</td><td>Verano</td><td>Ofertas calientes</td><td>2025-06-01</td><td>2025-08-30</td><td>$1800</td><td>Pausada</td><td><button class="edit"><i class="fa-solid fa-pen"></i></button><button class="delete"><i class="fa-solid fa-trash"></i></button></td></tr>
+          <tr><td>C003</td><td>P003</td><td>CL005</td><td>Navidad</td><td>Campaña navideña</td><td>2025-11-20</td><td>2025-12-30</td><td>$2500</td><td>Planificada</td><td><button class="edit"><i class="fa-solid fa-pen"></i></button><button class="delete"><i class="fa-solid fa-trash"></i></button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Clientes</title>
+  <link rel="stylesheet" href="../static/CSS/Dashboard-estilos/clientes.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="#"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="../static/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="../static/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="../static/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <div class="spacer"></div>
+    <a href="../static/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+
+  </div>
+
+  <div class="content">
+    <h1>Gestión de Clientes</h1>
+
+    <div class="filter-bar">
+      <input type="text" placeholder="Buscar por nombre, ID o razón social...">
+      <input type="date">
+      <button>Buscar</button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Razón Social</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>001</td><td>Elber</td><td>Delgado</td><td>Orquídeas S.A.</td><td>elber@correo.com</td><td>987654321</td><td><button class="edit"><i class="fa-solid fa-pen"></i></button><button class="delete"><i class="fa-solid fa-trash"></i></button></td></tr>
+          <tr><td>002</td><td>María</td><td>Pérez</td><td>Floral Express</td><td>maria@floral.com</td><td>954123654</td><td><button class="edit"><i class="fa-solid fa-pen"></i></button><button class="delete"><i class="fa-solid fa-trash"></i></button></td></tr>
+          <tr><td>003</td><td>Juan</td><td>López</td><td>EcoPlant</td><td>juan@eco.com</td><td>999666111</td><td><button class="edit"><i class="fa-solid fa-pen"></i></button><button class="delete"><i class="fa-solid fa-trash"></i></button></td></tr>
+          </tbody>
+      </table>
+    </div>
+
+
+    <div class="bottom-section">
+      <div class="left-section">
+        <div class="edit-form">
+          <h2>Editar Cliente</h2>
+          <div class="form-grid">
+            <div class="form-row">
+              <label>ID</label>
+              <input type="text" placeholder="001">
+            </div>
+            <div class="form-row">
+              <label>Nombre</label>
+              <input type="text" placeholder="Juan">
+            </div>
+            <div class="form-row">
+              <label>Apellido</label>
+              <input type="text" placeholder="Pérez">
+            </div>
+            <div class="form-row">
+              <label>Razón Social</label>
+              <input type="text" placeholder="JP Solutions">
+            </div>
+            <div class="form-row">
+              <label>Email</label>
+              <input type="email" placeholder="juanp@gmail.com">
+            </div>
+            <div class="form-row">
+              <label>Teléfono</label>
+              <input type="text" placeholder="987654321">
+            </div>
+          </div>
+          <div class="form-buttons">
+            <button class="save">Guardar</button>
+            <button class="cancel">Cancelar</button>
+            <button class="new">Nuevo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="insight-panel">
+          <h3>Resumen General</h3>
+          <div class="circle-chart">
+            <div class="inner-circle">
+              <span>76%</span>
+            </div>
+          </div>
+          <p class="chart-label">Clientes activos</p>
+          <div class="stats">
+            <div class="stat"><h4>156</h4><p>Registrados</p></div>
+            <div class="stat"><h4>28</h4><p>Campañas</p></div>
+            <div class="stat"><h4>5</h4><p>Revisión</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

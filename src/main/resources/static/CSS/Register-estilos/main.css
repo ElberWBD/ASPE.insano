@@ -1,0 +1,218 @@
+/* Estilos generales */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Dancing Script', cursive;
+    height: 100%;
+    display: flex;
+    justify-content: center;  /* Centra el contenedor de login horizontalmente */
+    align-items: center;     /* Centra el contenedor de login verticalmente */
+    background: linear-gradient(gray, #328083, #362929b2, #9c27b0, #6a1b9a);
+}
+
+/* Contenedor principal del login */
+.login-container {
+    display: flex;
+    width: 900px;            /* Ajusta el ancho del contenedor */
+    max-width: 1100px;
+    min-height: 700px;
+    background: white;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);  /* Sombra suave para darle profundidad */
+    transition: transform 0.3s ease-in-out; /* Transición suave para animaciones */
+    flex-direction: row;    /* Asegura que los elementos estén uno al lado del otro */
+    padding-right: 15px;
+}
+
+/* Efecto al pasar el mouse sobre el contenedor */
+.login-container:hover {
+    transform: translateY(-10px); /* Efecto de elevar el contenedor al pasar el mouse */
+}
+
+/* Estilos para la parte de la imagen */
+.login-image {
+    flex: 1;                      /* Ocupa la mitad del espacio */
+    background-image: url('../../IMG/Gato2.png');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Estilos para el formulario de login */
+.login-form {
+    flex: 1;                      /* Ocupa la otra mitad del espacio */
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;         /* Centra los elementos dentro del formulario */
+    margin-top: -100px;
+    
+}
+
+/* Estilo para el título h2 */
+/* Estilo para el título h2 */
+h2 {
+    font-size: 70px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding-left: 40px;
+    color: #9c27b0; /* Color inicial */
+    animation: color-change 5s infinite;  /* Aplica la animación */
+}
+
+h1 {
+    font-size: 30px;
+    color: #9c27b0; /* Color inicial */
+}
+
+/* Animación para cambiar el color del texto */
+@keyframes color-change {
+    0% {
+        color: #9c27b0; /* Color inicial */
+    }
+    25% {
+        color: #9c27b0; /* Segundo color */
+    }
+    50% {
+        color: #9c27b0; /* Tercer color */
+    }
+    75% {
+        color: #53267e; /* Cuarto color */
+    }
+    100% {
+        color: #53267e; /* Regresa al color inicial */
+    }
+}
+
+/* Estilo para los campos de entrada (input) */
+input {
+    width: 100%;
+    padding: 10px;            /* Más espacio dentro del campo */
+    margin: 20px 0;           /* Espacio entre los campos */
+    margin-top: -10px;
+    border: 2px solid #ddd;   /* Borde ligero, ajustable */
+    border-radius: 10px;      /* Bordes redondeados */
+    font-size: 16px;
+    transition: all 0.3s ease;  /* Transiciones suaves para el borde y sombra */
+    background: #f9f9f9;      /* Fondo suave para los campos */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* Efecto cuando el campo está enfocado */
+input:focus {
+    border-color: #9c27b0;         /* Cambia el color del borde al enfocar */
+    background: #fff;              /* Cambia el fondo para resaltarlo */
+    box-shadow: 0 0 10px rgba(156, 39, 176, 0.5); /* Sombra más intensa */
+}
+
+/* Estilos para los campos de entrada de contraseña */
+input[type="password"] {
+    background: linear-gradient(white); /* Degradado sutil */
+}
+
+/* Estilo para los campos de texto y contraseña cuando están vacíos */
+input:invalid {
+    border-color: #53267e; /* Color de borde si el campo tiene un valor incorrecto */
+}
+
+/* Estilo para el texto dentro de los campos */
+input::placeholder {
+    color: #aaa;      /* Color de texto de los placeholders */
+    font-style: italic; /* Un toque estilizado para los placeholders */
+}
+
+/* Contenedor para el botón */
+.button-container {
+    display: flex;
+    justify-content: center; /* Centra el botón horizontalmente */
+    width: 100%;  /* Asegura que el contenedor ocupe todo el ancho disponible */
+    margin-top: 20px; /* Ajusta el margen entre los campos y el botón */
+}
+
+/* Estilos para el botón de enviar */
+button.btn-submit {
+    background: linear-gradient(135deg, #9c27b0, #6a1b9a);  /* Gradiente de colores morados */
+    color: white;
+    padding: 15px 30px;  /* Aumentamos el padding para hacerlo más grande */
+    border: none;
+    border-radius: 50px;  /* Bordes más redondeados para darle un toque más suave */
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;    /* Texto en negrita para el botón */
+    transition: all 0.3s ease;  /* Transición suave para todos los efectos */
+    width: 220px;         /* Ancho del botón */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  /* Sombra más pronunciada */
+}
+
+/* Efecto al pasar el cursor sobre el botón */
+button.btn-submit:hover {
+    background: linear-gradient(135deg, #7b1fa2, #6a1b9a); /* Gradiente más oscuro al hacer hover */
+    transform: translateY(-5px);  /* Efecto de elevación cuando se pasa el cursor */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
+}
+
+/* Efecto cuando se presiona el botón */
+button.btn-submit:active {
+    transform: scale(0.98);  /* Efecto de "clic" (reducción de tamaño) */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  /* Vuelve la sombra a su estado original */
+}
+
+/* Estilos para los enlaces debajo del formulario (links) */
+.links {
+    margin-top: 60px;
+    text-align: center;
+}
+
+/* Estilos para los enlaces */
+.links a {
+    color: #6a1b9a;
+    font-size: 20px;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+/* Estilos para los enlaces al pasar el cursor sobre ellos */
+.links a:hover {
+    text-decoration: underline;
+}
+
+.line-break {
+    width: 105%;               /* Se extiende a lo largo del formulario */
+    border: 0;                 /* Sin bordes predefinidos */
+    border-top: 1px solid #6a1b9a; /* Línea delgada de color gris */
+    margin: 20px 0;            /* Espaciado arriba y abajo */
+}
+
+/* Contenedor para los íconos de redes sociales */
+.social-icons {
+    display: flex;
+    justify-content: center;  /* Centra los íconos horizontalmente */
+    gap: 90px;                /* Espaciado entre los íconos */
+    margin-top: 20px;         /* Espacio arriba de los íconos */
+}
+
+/* Estilos para los íconos de redes sociales */
+.social-icons i {
+    font-size: 40px;          /* Tamaño de los íconos */
+    color: #9c27b0;           /* Color morado para los íconos */
+    cursor: pointer;         /* Cambia el cursor a mano */
+    transition: transform 0.3s, color 0.3s; /* Transiciones suaves */
+}
+
+.social-icons i {
+    font-size: 40px;          /* Tamaño de los íconos */
+    color: #9c27b0;           /* Color morado para los íconos */
+    cursor: pointer;         /* Cambia el cursor a mano */
+    transition: transform 0.3s, color 0.3s; /* Transiciones suaves */
+}
+
+
+/* Efecto al pasar el cursor sobre los íconos */
+.social-icons i:hover {
+    transform: scale(1.1);    /* Aumenta el tamaño al pasar el cursor */
+    color: #ff6f61;           /* Cambia el color a un tono rojo */
+}
+
+
+

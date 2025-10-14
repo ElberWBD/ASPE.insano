@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Campañas</title>
+  <link rel="stylesheet" href="../static/CSS/Dashboard-estilos/campaña.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="#"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="../static/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="../static/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="../static/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <div class="spacer"></div>
+    <a href="../static/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+
+  <div class="content">
+    <h1>Gestión de Usuarios</h1>
+  
+
+    <div class="filter-bar">
+      <input type="text" placeholder="Buscar por nombre o correo...">
+      <button>Buscar</button>
+    </div>
+  
+    <div class="main-split">
+      
+      <div class="top-half">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Activo</th>
+                <th>Último Acceso</th>
+                <th>Fecha Creación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>U001</td>
+                <td>Juan Pérez</td>
+                <td>juan@example.com</td>
+                <td>Sí</td>
+                <td>2025-10-05 14:23</td>
+                <td>2024-03-12</td>
+                <td>
+                  <button class="edit"><i class="fa-solid fa-pen"></i></button>
+                  <button class="delete"><i class="fa-solid fa-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>U002</td>
+                <td>María López</td>
+                <td>maria@example.com</td>
+                <td>No</td>
+                <td>2025-09-29 09:47</td>
+                <td>2024-05-01</td>
+                <td>
+                  <button class="edit"><i class="fa-solid fa-pen"></i></button>
+                  <button class="delete"><i class="fa-solid fa-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <div class="bottom-half">
+        
+        <div class="crud-section">
+          <div class="edit-form">
+            <h2>Registrar / Editar Usuario</h2>
+            <div class="form-grid">
+              <div class="form-row"><label>ID Usuario</label><input type="text" placeholder="U001"></div>
+              <div class="form-row"><label>Nombre</label><input type="text" placeholder="Juan Pérez"></div>
+              <div class="form-row"><label>Email</label><input type="email" placeholder="usuario@correo.com"></div>
+              <div class="form-row"><label>Contraseña</label><input type="password" placeholder="********"></div>
+              <div class="form-row"><label>Activo</label>
+                <select>
+                  <option>Sí</option>
+                  <option>No</option>
+                </select>
+              </div>
+              <div class="form-row"><label>Rol</label>
+                <select>
+                  <option>Administrador</option>
+                  <option>Editor</option>
+                  <option>Invitado</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-buttons">
+              <button class="save">Guardar</button>
+              <button class="cancel">Cancelar</button>
+              <button class="new">Nuevo</button>
+            </div>
+          </div>
+        </div>
+
+  
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>
