@@ -19,16 +19,16 @@
     
         <!-- Menú principal -->
         <ul class="links">
-            <li><a href="../static/E-commerce.html">E-commerce & web</a></li>
-            <li><a href="../static/Consultoria.html">Consultoría en marketing</a></li>
-            <li><a href="../static/Eventos.html">Eventos & campañas BTL</a></li>
-            <li><a href="../static/Producción.html">Producción audiovisual & ATL</a></li>
+            <li><a href="/E-commerce.html">E-commerce & web</a></li>
+            <li><a href="/Consultoria.html">Consultoría en marketing</a></li>
+            <li><a href="/Eventos.html">Eventos & campañas BTL</a></li>
+            <li><a href="/Producción.html">Producción audiovisual & ATL</a></li>
         </ul>
     
         
         <div class="header-buttons">
             <!-- Botón para iniciar sesión -->
-            <button class="btn-submit" onclick="location.href='Login.html';">
+            <button id="btnLoginHeader" class="btn-submit" onclick="location.href='Login.html';">
               Iniciar sesión
             </button>
   
@@ -45,6 +45,15 @@
           </div>
     
       </div>
+
+      <div class="usuario-bar" style="display:flex;gap:.75rem;align-items:center;justify-content:flex-end;padding:.5rem 1rem;">
+     <span id="saludoUsuario" style="font-weight:600;"></span>
+     <span id="emailUsuario"  style="opacity:.8;"></span>
+    <button id="btnLogout" class="btn-salir" style="margin-left:12px;padding:.35rem .75rem;border-radius:8px;border:none;cursor:pointer;">
+    Cerrar sesión
+     </button>
+    </div>
+
     </header>
     
 
@@ -251,7 +260,10 @@
     <script src="JS/script6.js"></script>
     <script src="JS/script7.js"></script>
     
-      
+    <script src="/JS/sesion.js"></script>
+    <script>
+       SesionApp.iniciarSesionUI({ proteger: true, poblar: true });
+    </script>
       
       
     </body>

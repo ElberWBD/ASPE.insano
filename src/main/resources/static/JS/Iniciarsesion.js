@@ -1,47 +1,71 @@
-document.getElementById("loginForm").addEventListener("submit", async function (e) {
-    e.preventDefault(); // Evita el envío tradicional del formulario
+// JS/Iniciarsesion.js — Login del portal de clientes alineado a /api/usuarios/login
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
+  if (!form) return;
 
-    const email = document.querySelector('input[type="email"]').value.trim();
-    const password = document.querySelector('input[type="password"]').value.trim();
+  const btn = form.querySelector('button[type="submit"]');
+  const emailInput = form.querySelector('input[type="email"]');
+  const passInput  = form.querySelector('input[type="password"]');
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = (emailInput?.value || "").trim();
+    const password = (passInput?.value || "").trim();
 
     if (!email || !password) {
-        alert("Por favor, completa todos los campos.");
-        return;
+      alert("Por favor, completa todos los campos.");
+      return;
     }
+
+    if (btn) { btn.disabled = true; btn.dataset.originalText = btn.textContent; btn.textContent = "Ingresando..."; }
 
     try {
-        const response = await fetch("http://localhost:8080/api/clientes/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password // si tienes campo contraseña en Cliente
-            })
-        });
+      // Importante: ruta relativa al mismo host/puerto que sirve el HTML (8081)
+      const res = await fetch("/api/usuarios/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // El backend espera 'passwordHash'
+        body: JSON.stringify({ email: email, passwordHash: password })
+      });
 
-        if (response.ok) {
-            const cliente = await response.json();
+      const raw = await res.text();
+      let data = null;
+      try { data = raw ? JSON.parse(raw) : null; } catch { /* puede venir texto plano */ }
 
-            // Guardar cliente en localStorage (sin contraseña)
-            localStorage.setItem("clienteActual", JSON.stringify(cliente));
+      if (res.ok) {
+        // Guardamos la sesión mínima para el resto del sitio
+        if (data) {
+          sessionStorage.setItem("usuarioId", data.usuarioId ?? "");
+          sessionStorage.setItem("username", data.username ?? "");
+          sessionStorage.setItem("email", data.email ?? email);
 
-            alert("Inicio de sesión exitoso. Bienvenido, " + cliente.razonSocial + "!");
-
-            // Redirigir al index principal
-            window.location.href = "/Index.html";
-
-        } else if (response.status === 401) {
-            alert("Contraseña incorrecta.");
-        } else if (response.status === 404) {
-            alert("Cliente no encontrado.");
-        } else {
-            alert("Error al iniciar sesión. Código: " + response.status);
+          // Para mantener TU icono en Index.html (usa localStorage.usuarioActual)
+          try {
+            localStorage.setItem("usuarioActual", JSON.stringify({
+              username: data.username ?? ""
+            }));
+          } catch {}
         }
+        alert("✅ Sesión iniciada");
+        window.location.href = "/Index.html";
+        return;
+      }
 
-    } catch (error) {
-        console.error("Error:", error);
-        alert("No se pudo conectar con el servidor.");
+      if (res.status === 401) {
+        alert((data && (data.message || data.error)) || "Credenciales inválidas (401).");
+      } else if (res.status === 404) {
+        alert((data && (data.message || data.error)) || "Usuario no encontrado (404).");
+      } else if (res.status === 400) {
+        alert((data && (data.message || data.error)) || "Solicitud inválida (400).");
+      } else {
+        alert("❌ No se pudo iniciar sesión. [" + res.status + "] " + (data?.message || raw || "Error inesperado."));
+      }
+    } catch (err) {
+      console.error("Error de red:", err);
+      alert("❌ No se pudo conectar con el servidor.");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = btn.dataset.originalText || "Iniciar sesión"; }
     }
+  });
 });

@@ -4,23 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../static/CSS/Dashboard-estilos/main2.css">
+  <link rel="stylesheet" href="/CSS/Dashboard-estilos/main2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+
   <div class="sidebar">
     <a href="#"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
-    <a href="../static/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
-    <a href="../static/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
-    <a href="../static/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
     <div class="spacer"></div>
-    <a href="../static/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+    <a href="/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
 
   </div>
 
   <div class="content">
     <h1>Bienvenido!!</h1>
-
+    <div class="usuario-bar" style="display:flex;gap:.75rem;align-items:center;justify-content:flex-end;padding:.5rem 1rem;">
+  <span id="saludoUsuario" style="font-weight:600;"></span>
+  <span id="emailUsuario"  style="opacity:.8;"></span>
+  <button id="btnLogout" class="btn-salir" style="margin-left:12px;padding:.35rem .75rem;border-radius:8px;border:none;cursor:pointer;">
+    Cerrar sesión
+  </button>
+</div>
 
 
     <div class="cards">
@@ -181,5 +188,11 @@
           </div>
       
   </div>
+
+  <script src="/JS/sesion.js"></script>
+  <script>
+  SesionApp.iniciarSesionUI({ proteger: true, poblar: true });
+  </script>
+
 </body>
 </html>
