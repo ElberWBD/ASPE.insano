@@ -52,24 +52,141 @@
         </form>
       </section>
 
-      <!-- CAMPAÑAS -->
-      <section id="campanas" class="seccion">
-        <h2>Mis Campañas</h2>
-        <div class="campana-lista">
-          <div class="campana-card" onclick="abrirModal('Proyecto Web Empresarial')">
-            <h3>Proyecto Web Empresarial</h3>
-            <p>Estado: <span class="estado aprobado">Aprobado</span></p>
-          </div>
-          <div class="campana-card" onclick="abrirModal('Campaña de Redes Sociales')">
-            <h3>Campaña de Redes Sociales</h3>
-            <p>Estado: <span class="estado pendiente">Pendiente</span></p>
-          </div>
-          <div class="campana-card" onclick="abrirModal('Landing Page Promocional')">
-            <h3>Landing Page Promocional</h3>
-            <p>Estado: <span class="estado en-progreso">En progreso</span></p>
-          </div>
+     <section id="campanas" class="seccion campanas-mod">
+  <!-- ====== Estilos acotados a esta sección ====== -->
+  <style>
+    :root { --c-borde:#e9f3ee; --c-borde-ctrl:#dfe8e3; --c-prim:#8bdcb3; --c-text:#2d3e35; --radius:14px; --gap:14px; }
+    #campanas.campanas-mod { padding: 0 0.5rem 1rem; }
+    #campanas .card.panel { background:#fff; border:1px solid var(--c-borde); border-radius:16px; padding:18px; box-shadow:0 6px 24px rgba(0,0,0,.04); }
+    #campanas h2 { font-size:1.6rem; margin:0 0 1rem; }
+    #campanas h3 { font-size:1.1rem; margin:.25rem 0 .75rem; }
+
+    /* GRID DEL FORMULARIO: 2 columnas en desktop; 1 columna en ≤ 900px */
+    #campanas .form-grid {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: minmax(44px, auto);
+      gap: var(--gap);
+      align-items:start;
+    }
+    @media (max-width: 900px){ #campanas .form-grid { grid-template-columns: 1fr; } }
+    #campanas .span-2 { grid-column: 1 / -1; }
+
+    /* CONTROLES */
+    #campanas label { display:flex; flex-direction:column; gap:6px; font-weight:600; color:var(--c-text); }
+    #campanas input[type="text"],
+    #campanas textarea,
+    #campanas select {
+      width:100%; padding:11px 12px; font:inherit; line-height:1.2;
+      border:1px solid var(--c-borde-ctrl); border-radius: var(--radius);
+      background:#fff; color:#1b2a22; outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease;
+    }
+    #campanas textarea { min-height:110px; resize:vertical; }
+    #campanas input[type="text"]:focus,
+    #campanas textarea:focus,
+    #campanas select:focus { border-color:var(--c-prim); box-shadow:0 0 0 3px rgba(139,220,179,.25); }
+
+    /* LÍNEA ADJUNTOS + BOTÓN perfectamente alineados */
+    #campanas .row-inline {
+      grid-column: 1 / -1; /* ocupa todo el ancho del grid */
+      display:grid;
+      grid-template-columns: 1fr auto; /* archivo | botón */
+      gap: var(--gap);
+      align-items:center;
+    }
+    @media (max-width: 600px){
+      #campanas .row-inline { grid-template-columns: 1fr; }
+      #campanas .row-inline .btn-acc { width:100%; }
+    }
+    #campanas .file-wrap {
+      display:flex; flex-direction:column; gap:6px;
+    }
+    #campanas input[type="file"] {
+      display:block; width:100%;
+      padding:10px; /* homogeneiza altura del control nativo */
+      border:1px solid var(--c-borde-ctrl); border-radius: var(--radius);
+      background:#fff;
+    }
+
+    /* BOTÓN */
+    #campanas .btn-acc {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:11px 16px; border-radius:12px; border:0; cursor:pointer;
+      background:var(--c-prim); color:#08351f; font-weight:700;
+      transition:transform .04s ease, box-shadow .2s ease;
+      white-space:nowrap; height:44px;
+    }
+    #campanas .btn-acc:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(139,220,179,.35); }
+    #campanas .btn-acc:active { transform:translateY(0); box-shadow:none; }
+
+    /* TABLA */
+    #campanas .table { width:100%; border-collapse:separate; border-spacing:0 8px; }
+    #campanas .table thead th { text-align:left; font-weight:700; color:var(--c-text); padding:6px 8px; }
+    #campanas .table tbody tr { background:#fff; border:1px solid var(--c-borde); border-radius:12px; }
+    #campanas .table tbody td { padding:10px 8px; }
+    #campanas .badge { display:inline-block; padding:6px 10px; border-radius:999px; background:#eef8f2; color:#23533f; font-weight:700; }
+
+    /* TEXTOS AUX */
+    #campanas .muted { color:#5b6f65; font-style:italic; }
+  </style>
+
+  <h2>Mis Campañas</h2>
+
+  <!-- NUEVA CAMPAÑA -->
+  <section id="crear-campana-panel" class="card panel" style="margin-bottom:1rem;">
+    <h3>Nueva campaña</h3>
+
+    <form id="frmNuevaCampania" class="form-grid">
+      <input type="hidden" id="clienteId" value="">
+
+      <label>
+        Servicio
+        <select id="servicioId" required>
+          <option value="1">Consultoría</option>
+          <option value="2">E-commerce</option>
+          <option value="3">Producción</option>
+        </select>
+      </label>
+
+      <label>
+        Nombre
+        <input id="nombreCampania" type="text" required placeholder="Ej.: Campaña Q4 - Ads sociales">
+      </label>
+
+      <label class="span-2">
+        Descripción
+        <textarea id="descripcionCampania" placeholder="Contexto, objetivos, público, plazos…"></textarea>
+      </label>
+
+      <!-- Adjuntos + Botón alineados en una sola fila -->
+      <div class="row-inline">
+        <div class="file-wrap">
+          <span style="font-weight:600; color:var(--c-text);">Adjuntos</span>
+          <input id="filesCampania" type="file" multiple>
         </div>
-      </section>
+        <button type="submit" class="btn-acc">Crear campaña</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- LISTADO -->
+  <section class="card panel">
+    <h3>Listado</h3>
+    <input type="hidden" id="clienteIdTabla" value="">
+    <table class="table listado">
+      <thead>
+        <tr><th>ID</th><th>Nombre</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody id="listaMisCampanias">
+        <tr><td colspan="4" class="muted">Cargando…</td></tr>
+      </tbody>
+    </table>
+  </section>
+</section>
+
+
+
 
       <!-- ELIMINAR -->
       <section id="eliminar" class="seccion">
@@ -80,19 +197,6 @@
     </main>
   </div>
 
-  <!-- MODAL -->
-  <div id="modal" class="modal">
-    <div class="modal-contenido">
-      <span class="cerrar" onclick="cerrarModal()">&times;</span>
-      <h3 id="modal-titulo"></h3>
-      <p><strong>Estado:</strong> <span id="modal-estado">Aprobado</span></p>
-      <div class="chat">
-        <div class="mensaje programador">Hola, el proyecto está casi listo.</div>
-        <div class="mensaje usuario">Perfecto, espero la versión final.</div>
-        <input type="text" placeholder="Escribe un mensaje...">
-      </div>
-    </div>
-  </div>
 
   <script>
     function mostrarSeccion(id) {
@@ -120,6 +224,22 @@
 <script>
   SesionApp.iniciarSesionUI({ proteger: true, poblar: true });
 </script>
+<script src="/JS/cliente-campanias.js"></script>
+<script>
+  // Poblar IDs ocultos con el usuario en sesión (si ya usas sesion.js)
+  try {
+    const u = (window.getUsuarioSesion && getUsuarioSesion()) || null;
+    const id = u?.usuarioId || u?.clienteId || "";
+    const h1 = document.getElementById('clienteId');
+    const h2 = document.getElementById('clienteIdTabla');
+    if (h1) h1.value = id;
+    if (h2) h2.value = id;
+    if (window.SesionApp && SesionApp.iniciarSesionUI) {
+      SesionApp.iniciarSesionUI({ proteger:true, poblar:true });
+    }
+  } catch(e) { console.warn(e); }
+</script>
+
 
 </body>
 </html>
