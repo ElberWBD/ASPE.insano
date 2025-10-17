@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Usuarios</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/campaña.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
+    <div class="spacer"></div>
+    <a href="Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+  <div class="content">
+    <h1>Gestión de Usuarios</h1>
+
+    <div class="filter-bar">
+      <input id="buscar" type="text" placeholder="Buscar por nombre o correo...">
+      <button onclick="cargarUsuarios()">Buscar</button>
+    </div>
+
+    <div class="main-split">
+      <div class="top-half">
+        <div class="table-container">
+          <table id="tablaUsuarios">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Activo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bottom-half">
+        <div class="crud-section">
+          <div class="edit-form">
+            <h2>Registrar / Editar Usuario</h2>
+            <div class="form-grid">
+              <div class="form-row"><label>ID</label><input id="usuario_id" type="text" readonly></div>
+              <div class="form-row"><label>Nombre</label><input id="username" type="text"></div>
+              <div class="form-row"><label>Email</label><input id="email" type="email"></div>
+              <div class="form-row"><label>Contraseña</label><input id="password_hash" type="password"></div>
+              <div class="form-row"><label>Activo</label>
+                <select id="active">
+                  <option value="true">Sí</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+
+
+            </div>
+            <div class="form-buttons">
+              <button onclick="guardarUsuario()" class="save">Guardar</button>
+              <button onclick="limpiarFormulario()" class="cancel">Cancelar</button>
+              <button onclick="nuevoUsuario()" class="new">Nuevo</button>
+            </div>
+            <div id="mensaje"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:8080/usuarios";
+  
+    // Mensaje simple
+    function mostrarMensaje(texto, esError = false) {
+      const mensajeEl = document.getElementById("mensaje");
+      if (!mensajeEl) return;
+      mensajeEl.textContent = texto;
+      mensajeEl.style.color = esError ? "red" : "green";
+      setTimeout(() => { mensajeEl.textContent = ""; }, 3500);
+    }
+  
+    // Cargar lista de usuarios
+    async function cargarUsuarios() {
+      try {
+        const res = await fetch(`${API_URL}/listar`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const tbody = document.querySelector("#tablaUsuarios tbody");
+        tbody.innerHTML = "";
+        data.forEach(u => {
+          const fila = `
+            <tr>
+              <td>${u.usuario_id}</td>
+              <td>${u.username}</td>
+              <td>${u.email}</td>
+              <td>${u.active ? "Sí" : "No"}</td>
+              <td>
+                <button onclick="editarUsuario(${u.usuario_id})"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="eliminarUsuario(${u.usuario_id})"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>`;
+          tbody.innerHTML += fila;
+        });
+      } catch (err) {
+        console.error("Error cargando usuarios:", err);
+        mostrarMensaje("Error al cargar usuarios (ver consola).", true);
+      }
+    }
+  
+    // Guardar usuario (create or update via backend save())
+    async function guardarUsuario() {
+      try {
+        // Lee los campos tal como están definidos en tu HTML
+        const idVal = document.getElementById("usuario_id").value;
+        const username = document.getElementById("username").value?.trim();
+        const email = document.getElementById("email").value?.trim();
+        const password_hash = document.getElementById("password_hash").value;
+        const active = document.getElementById("active").value === "true";
+  
+        // validaciones mínimas
+        if (!username || !email || !password_hash) {
+          mostrarMensaje("Rellena nombre, email y contraseña.", true);
+          return;
+        }
+  
+        // Construir payload: si es creación **omitimos** usuario_id
+        const payload = {
+          username,
+          email,
+          password_hash,
+          active
+        };
+        if (idVal) { // si existe id -> incluirlo para actualización si tu backend lo soporta
+          payload.usuario_id = parseInt(idVal);
+        }
+  
+        const res = await fetch(`${API_URL}/guardar`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+  
+        if (!res.ok) {
+          // intentar leer cuerpo de error
+          let detalle = "";
+          try {
+            detalle = await res.text();
+          } catch (e) { /* ignore */ }
+          console.error("Server error:", res.status, detalle);
+          mostrarMensaje("Error al guardar usuario. Revisa la consola.", true);
+          return;
+        }
+  
+        mostrarMensaje("Usuario guardado correctamente");
+        limpiarFormulario();
+        await cargarUsuarios();
+  
+      } catch (err) {
+        console.error("Error en guardarUsuario:", err);
+        mostrarMensaje("Error al guardar usuario (ver consola).", true);
+      }
+    }
+  
+    // Rellenar el formulario para editar (usa /listar como tu backend no tiene GET /{id})
+    async function editarUsuario(id) {
+      try {
+        const res = await fetch(`${API_URL}/listar`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const usuarios = await res.json();
+        const u = usuarios.find(x => x.usuario_id === id);
+        if (!u) {
+          mostrarMensaje("Usuario no encontrado.", true);
+          return;
+        }
+  
+        document.getElementById("usuario_id").value = u.usuario_id;
+        document.getElementById("username").value = u.username || "";
+        document.getElementById("email").value = u.email || "";
+        document.getElementById("password_hash").value = u.password_hash || "";
+        document.getElementById("active").value = u.active ? "true" : "false";
+        // focus en nombre para editar rápido
+        document.getElementById("username").focus();
+  
+      } catch (err) {
+        console.error("Error en editarUsuario:", err);
+        mostrarMensaje("Error al preparar edición (ver consola).", true);
+      }
+    }
+  
+    // Eliminar
+    async function eliminarUsuario(id) {
+      if (!confirm("¿Eliminar este usuario?")) return;
+      try {
+        const res = await fetch(`${API_URL}/eliminar/${id}`, { method: "DELETE" });
+        if (!res.ok) {
+          const texto = await res.text().catch(()=>"");
+          console.error("Error eliminar:", res.status, texto);
+          mostrarMensaje("Error al eliminar usuario (ver consola).", true);
+          return;
+        }
+        mostrarMensaje("Usuario eliminado");
+        cargarUsuarios();
+      } catch (err) {
+        console.error("Error eliminarUsuario:", err);
+        mostrarMensaje("Error al eliminar usuario (ver consola).", true);
+      }
+    }
+  
+    // Limpiar formulario
+    function limpiarFormulario() {
+      document.getElementById("usuario_id").value = "";
+      document.getElementById("username").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("password_hash").value = "";
+      document.getElementById("active").value = "true";
+      const mensajeEl = document.getElementById("mensaje");
+      if (mensajeEl) mensajeEl.textContent = "";
+    }
+  
+    function nuevoUsuario() {
+      limpiarFormulario();
+      document.getElementById("username").focus();
+    }
+  
+    // Init
+    cargarUsuarios();
+  </script>
+  
+
+</body>
+</html>

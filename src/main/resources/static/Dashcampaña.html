@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestión de Campañas</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/campaña.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampania.html" class="active"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
+    <div class="spacer"></div>
+    <a href="static/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+  <div class="content">
+    <h1>Gestión de Campañas</h1>
+
+    <div class="top-section">
+      <div class="left-section">
+        <div class="edit-form">
+          <h2>Registrar / Editar Campaña</h2>
+          <div class="form-grid">
+            <div class="form-row">
+              <label>ID Proyecto</label>
+              <input type="number" id="id_proyecto" placeholder="1" required>
+            </div>
+            <div class="form-row">
+              <label>ID Cliente</label>
+              <input type="number" id="id_cliente" placeholder="1" required>
+            </div>
+            <div class="form-row">
+              <label>Nombre</label>
+              <input type="text" id="nombre" placeholder="Campaña Primavera" required>
+            </div>
+            <div class="form-row">
+              <label>Descripción</label>
+              <input type="text" id="descripcion" placeholder="Descripción de la campaña">
+            </div>
+            <div class="form-row">
+              <label>Fecha Inicio</label>
+              <input type="date" id="fecha_inicio">
+            </div>
+            <div class="form-row">
+              <label>Fecha Fin</label>
+              <input type="date" id="fecha_fin">
+            </div>
+            <div class="form-row">
+              <label>Presupuesto</label>
+              <input type="number" id="presupuesto" placeholder="1500" step="0.01">
+            </div>
+            <div class="form-row">
+              <label>Estado</label>
+              <select id="estado">
+                <option>Activa</option>
+                <option>Pausada</option>
+                <option>Finalizada</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-buttons">
+            <button class="save" onclick="guardarCampania()">Guardar</button>
+            <button class="cancel" onclick="limpiarFormulario()">Cancelar</button>
+            <button class="new" onclick="limpiarFormulario()">Nuevo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="insight-panel">
+          <h3>Estadísticas de Campañas</h3>
+          <div class="circle-chart">
+            <div class="inner-circle"><span>82%</span></div>
+          </div>
+          <p class="chart-label">Campañas activas</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Campaña</th>
+            <th>ID Proyecto</th>
+            <th>ID Cliente</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Presupuesto</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-campanias"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:8080/api/campanias"; // <-- nombre sin ñ
+
+    async function cargarCampanias() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const tbody = document.getElementById("tabla-campanias");
+      tbody.innerHTML = "";
+      data.forEach(c => {
+        const fila = `
+          <tr>
+            <td>${c.idCampania}</td>
+            <td>${c.idProyecto}</td>
+            <td>${c.idCliente}</td>
+            <td>${c.nombre}</td>
+            <td>${c.descripcion || ""}</td>
+            <td>${c.fechaInicio || ""}</td>
+            <td>${c.fechaFin || ""}</td>
+            <td>${c.presupuesto || 0}</td>
+            <td>${c.estado || ""}</td>
+            <td>
+              <button onclick="editarCampania(${c.idCampania})">✏️</button>
+              <button onclick="eliminarCampania(${c.idCampania})">🗑️</button>
+            </td>
+          </tr>`;
+        tbody.innerHTML += fila;
+      });
+    }
+
+    async function guardarCampania() {
+      const campania = {
+        idProyecto: document.getElementById("id_proyecto").value,
+        idCliente: document.getElementById("id_cliente").value,
+        nombre: document.getElementById("nombre").value,
+        descripcion: document.getElementById("descripcion").value,
+        fechaInicio: document.getElementById("fecha_inicio").value,
+        fechaFin: document.getElementById("fecha_fin").value,
+        presupuesto: document.getElementById("presupuesto").value,
+        estado: document.getElementById("estado").value
+      };
+
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(campania)
+      });
+
+      limpiarFormulario();
+      cargarCampanias();
+    }
+
+    function limpiarFormulario() {
+      document.querySelectorAll("input, select").forEach(e => e.value = "");
+    }
+
+    async function eliminarCampania(id) {
+      if (confirm("¿Seguro que deseas eliminar esta campaña?")) {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        cargarCampanias();
+      }
+    }
+
+    window.onload = cargarCampanias;
+  </script>
+</body>
+</html>
