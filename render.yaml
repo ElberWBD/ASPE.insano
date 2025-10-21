@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: aspe-springboot
+    env: java
+    region: ohio
+    buildCommand: "./mvnw clean install -DskipTests"
+    startCommand: "java -jar target/*.jar"
+    plan: free
+    envVars:
+      - key: JAVA_VERSION
+        value: 21
