@@ -1,0 +1,213 @@
+/* === ESTILOS GENERALES === */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Dancing Script', cursive;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(gray, #328083, #362929b2, #9c27b0, #6a1b9a);
+  overflow: hidden; /* Evita scrolls y franjas */
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.login-container {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  max-width: 850px;
+  height: 90vh; /* ocupa casi toda la pantalla sin salir */
+  background: white;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease-in-out;
+}
+
+.login-container:hover {
+  transform: translateY(-4px);
+}
+
+/* === SECCIÓN DE IMAGEN === */
+.login-image {
+  flex: 1;
+  background-image: url('../../IMG/Gato2.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+/* === FORMULARIO === */
+.login-form {
+  flex: 1;
+  padding: 30px 35px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* === TÍTULOS === */
+h2 {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #9c27b0;
+  text-align: center;
+  animation: color-change 5s infinite;
+}
+
+h1 {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: #9c27b0;
+  text-align: center;
+}
+
+@keyframes color-change {
+  0%, 25%, 50% { color: #9c27b0; }
+  75%, 100% { color: #53267e; }
+}
+
+/* === INPUTS === */
+input {
+  width: 100%;
+  padding: 8px 10px;
+  margin: 7px 0;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  border-color: #9c27b0;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(156, 39, 176, 0.4);
+}
+
+/* === BOTÓN === */
+.button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+button.btn-submit {
+  background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  width: 160px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+button.btn-submit:hover {
+  transform: translateY(-3px);
+}
+
+/* === ENLACES === */
+.links {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.links a {
+  color: #6a1b9a;
+  font-size: 15px;
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+/* === ICONOS SOCIALES === */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 15px;
+}
+
+.social-icons i {
+  font-size: 26px;
+  color: #9c27b0;
+  cursor: pointer;
+  transition: transform 0.3s, color 0.3s;
+}
+
+.social-icons i:hover {
+  transform: scale(1.1);
+  color: #ff6f61;
+}
+
+/* === LÍNEA === */
+.line-break {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid #6a1b9a;
+  margin: 15px 0;
+}
+
+/* === RESPONSIVIDAD === */
+
+/* 🔹 Laptops pequeñas (1366px y menos) */
+@media (max-width: 1366px) {
+  html, body {
+    overflow-y: auto; /* Permite scroll si falta espacio */
+  }
+
+  .login-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 95%;
+    height: auto;
+    margin: 30px 0;
+  }
+
+  .login-image {
+    display: none;
+  }
+
+  .login-form {
+    width: 100%;
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  button.btn-submit {
+    width: 150px;
+    font-size: 14px;
+  }
+}
+
+/* 🔹 Tablets y celulares */
+@media (max-width: 768px) {
+  h2 { font-size: 1.7rem; }
+  input { font-size: 14px; }
+  .social-icons { gap: 20px; }
+  .social-icons i { font-size: 22px; }
+}
+
+/* 🔹 Celulares pequeños */
+@media (max-width: 480px) {
+  h2 { font-size: 1.5rem; }
+  input { padding: 6px; }
+  button.btn-submit {
+    width: 130px;
+    font-size: 13px;
+  }
+}

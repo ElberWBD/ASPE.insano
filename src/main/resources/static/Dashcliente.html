@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Clientes</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/clientes.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/Dashcliente.html" class="active"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampania.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
+    <div class="spacer"></div>
+    <a href="Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+  <div class="content">
+    <h1>Gestión de Clientes</h1>
+
+    <div class="filter-bar">
+      <input type="text" id="busqueda" placeholder="Buscar por nombre, ID o razón social...">
+      <button onclick="buscarCliente()">Buscar</button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Razón Social</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-clientes">
+          <!-- Se llena dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bottom-section">
+      <div class="left-section">
+        <div class="edit-form">
+          <h2>Registrar / Editar Cliente</h2>
+          <div class="form-grid">
+            <div class="form-row">
+              <label>ID</label>
+              <input type="text" id="id" placeholder="(auto)" readonly>
+            </div>
+            <div class="form-row">
+              <label>Nombre</label>
+              <input type="text" id="nombre" placeholder="Nombre">
+            </div>
+            <div class="form-row">
+              <label>Apellido</label>
+              <input type="text" id="apellido" placeholder="Apellido">
+            </div>
+            <div class="form-row">
+              <label>Razón Social</label>
+              <input type="text" id="razonSocial" placeholder="Razón Social">
+            </div>
+            <div class="form-row">
+              <label>Email</label>
+              <input type="email" id="email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-row">
+              <label>Teléfono</label>
+              <input type="text" id="telefono" placeholder="987654321">
+            </div>
+            <div class="form-row">
+              <label>Contraseña</label>
+              <input type="password" id="password" placeholder="••••••••">
+            </div>
+          </div>
+          <div class="form-buttons">
+            <button class="save" onclick="guardarCliente()">Guardar</button>
+            <button class="cancel" onclick="limpiarFormulario()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="insight-panel">
+          <h3>Resumen General</h3>
+          <div class="circle-chart">
+            <div class="inner-circle">
+              <span>76%</span>
+            </div>
+          </div>
+          <p class="chart-label">Clientes activos</p>
+          <div class="stats">
+            <div class="stat"><h4>156</h4><p>Registrados</p></div>
+            <div class="stat"><h4>28</h4><p>Campañas</p></div>
+            <div class="stat"><h4>5</h4><p>Revisión</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== SCRIPT JS ====================== -->
+  <script>
+    const API_URL = "http://localhost:8080/clientes";
+
+    document.addEventListener("DOMContentLoaded", listarClientes);
+
+    async function listarClientes() {
+      try {
+        const response = await fetch(`${API_URL}/listar`);
+        const clientes = await response.json();
+
+        const tabla = document.getElementById("tabla-clientes");
+        tabla.innerHTML = "";
+
+        clientes.forEach(cliente => {
+          const fila = `
+            <tr>
+              <td>${cliente.id}</td>
+              <td>${cliente.nombre}</td>
+              <td>${cliente.apellido}</td>
+              <td>${cliente.razonSocial}</td>
+              <td>${cliente.email}</td>
+              <td>${cliente.telefono}</td>
+              <td>
+                <button class="edit" onclick='editarCliente(${JSON.stringify(cliente)})'>
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="delete" onclick="eliminarCliente(${cliente.id})">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+          tabla.innerHTML += fila;
+        });
+      } catch (error) {
+        console.error("Error al listar clientes:", error);
+      }
+    }
+
+    function editarCliente(cliente) {
+      document.getElementById("id").value = cliente.id;
+      document.getElementById("nombre").value = cliente.nombre;
+      document.getElementById("apellido").value = cliente.apellido;
+      document.getElementById("razonSocial").value = cliente.razonSocial;
+      document.getElementById("email").value = cliente.email;
+      document.getElementById("telefono").value = cliente.telefono;
+      document.getElementById("password").value = "";
+    }
+
+    async function guardarCliente() {
+      const cliente = {
+        id: document.getElementById("id").value || null,
+        nombre: document.getElementById("nombre").value,
+        apellido: document.getElementById("apellido").value,
+        razonSocial: document.getElementById("razonSocial").value,
+        email: document.getElementById("email").value,
+        telefono: document.getElementById("telefono").value,
+        password: document.getElementById("password").value
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/guardar`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cliente)
+        });
+
+        if (response.ok) {
+          alert("Cliente guardado correctamente");
+          listarClientes();
+          limpiarFormulario();
+        } else {
+          const errorMsg = await response.text();
+          alert("Error al guardar cliente: " + errorMsg);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+
+    async function eliminarCliente(id) {
+      if (!confirm("¿Seguro que desea eliminar este cliente?")) return;
+
+      try {
+        const response = await fetch(`${API_URL}/eliminar/${id}`, {
+          method: "DELETE"
+        });
+
+        if (response.ok) {
+          alert("Cliente eliminado correctamente");
+          listarClientes();
+        } else {
+          alert("Error al eliminar cliente");
+        }
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+      }
+    }
+
+    function limpiarFormulario() {
+      document.querySelectorAll(".edit-form input").forEach(input => input.value = "");
+    }
+
+    function buscarCliente() {
+      const filtro = document.getElementById("busqueda").value.toLowerCase();
+      const filas = document.querySelectorAll("#tabla-clientes tr");
+
+      filas.forEach(fila => {
+        const textoFila = fila.textContent.toLowerCase();
+        fila.style.display = textoFila.includes(filtro) ? "" : "none";
+      });
+    }
+  </script>
+</body>
+</html>

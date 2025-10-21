@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CSS/Login-estilos/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+  <div class="login-container">
+    <div class="login-image"></div>
+
+    <div class="login-form">
+      <h2>Bienvenido!!</h2><br>
+
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="Correo electrónico" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+
+        <div class="button-container">
+          <button type="submit" class="btn-submit">Iniciar sesión</button>
+        </div><br>
+
+        <hr class="line-break">
+        <h1 style="text-align: center">Iniciar sesión con</h1>
+
+        <div class="social-icons">
+          <i class="fab fa-google"></i>
+          <i class="fab fa-facebook-f"></i>
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-microsoft"></i>
+        </div><br>
+
+        <div class="links">
+          <a href="Index.html">Entrar como invitado</a>
+          <a href="Register.html">Crear tu cuenta</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+    
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+    
+      try {
+        const response = await fetch("http://localhost:8080/clientes/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+    
+        if (response.ok) {
+          const user = await response.json();
+  
+          // ✅ Guarda el ID correcto (user.id en lugar de user.id_cliente)
+          sessionStorage.setItem("clienteId", user.id);
+          sessionStorage.setItem("clienteNombre", user.nombre);
+          sessionStorage.setItem("clienteEmail", user.email);
+  
+          alert("Inicio de sesión exitoso");
+          window.location.href = "Usuario.html";
+        } else {
+          const errorText = await response.text();
+          alert("Error: " + errorText);
+        }
+      } catch (error) {
+        alert("Error al conectar con el servidor");
+      }
+    });
+  </script>
+  
+    
+</body>
+</html>

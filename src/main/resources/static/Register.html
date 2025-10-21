@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Cuenta</title>
+
+  <!-- Estilos -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CSS/Register-estilos/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+  <div class="login-container">
+    <div class="login-image"></div>
+
+    <div class="login-form">
+      <h2>Crear Cuenta</h2><br>
+
+      <form id="registerForm">
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="apellido" placeholder="Apellido" required>
+        <input type="text" id="razon_social" placeholder="Razón social (opcional)">
+        <input type="email" id="email" placeholder="Correo electrónico" required>
+        <input type="text" id="telefono" placeholder="Teléfono">
+        <input type="password" id="password" placeholder="Contraseña" required>
+
+        <div class="button-container">
+          <button type="submit" class="btn-submit">Registrarse</button>
+        </div><br>
+
+        <hr class="line-break">
+        <h1 style="text-align: center">Registrarse con</h1>
+
+        <div class="social-icons">
+          <i class="fab fa-google"></i>
+          <i class="fab fa-facebook-f"></i>
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-microsoft"></i>
+        </div><br>
+
+        <div class="links">
+          <a href="Index.html">Entrar como invitado</a>
+          <a href="Login.html">Iniciar sesión</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE REGISTRO -->
+  <script>
+  document.getElementById("registerForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    // Crear objeto cliente con las claves que espera el backend
+    const cliente = {
+      nombre: document.getElementById("nombre").value.trim(),
+      apellido: document.getElementById("apellido").value.trim(),
+      razonSocial: document.getElementById("razon_social").value.trim(), // ✅ CORREGIDO
+      email: document.getElementById("email").value.trim(),
+      telefono: document.getElementById("telefono").value.trim(),
+      password: document.getElementById("password").value.trim()
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/clientes/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cliente)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Guardar datos del cliente en sesión
+        sessionStorage.setItem("clienteNombre", data.nombre);
+        sessionStorage.setItem("clienteEmail", data.email);
+
+        alert("✅ Registro exitoso. Bienvenido, " + data.nombre + "!");
+
+        // Redirigir después de un segundo
+        setTimeout(() => {
+          window.location.href = "Index.html";
+        }, 1000);
+
+      } else {
+        const errorText = await response.text();
+        alert("❌ Error al registrar: " + errorText);
+      }
+
+    } catch (error) {
+      console.error("Error en la conexión:", error);
+      alert("⚠️ No se pudo conectar con el servidor.");
+    }
+  });
+  </script>
+</body>
+</html>

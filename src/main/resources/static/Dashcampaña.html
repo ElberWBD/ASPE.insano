@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestión de Campañas</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/campaña.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/Dashcliente.html" class="active"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
+    <div class="spacer"></div>
+    <a href="Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+  <div class="content">
+    <h1>Gestión de Campañas</h1>
+
+    <div class="top-section">
+      <div class="left-section">
+        <div class="edit-form">
+          <h2 id="formTitle">Registrar Campaña</h2>
+          <div class="form-grid">
+            <input type="hidden" id="id_campania">
+
+            <div class="form-row">
+              <label>Buscar Cliente</label>
+              <input type="text" id="buscar_cliente" placeholder="Buscar cliente...">
+              <select id="id_cliente" required>
+                <option value="">Seleccione un cliente</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label>Nombre del Servicio</label>
+              <select id="nombre" required>
+                <option value="">Seleccione un servicio</option>
+                <option value="E-commerce & Web">E-commerce & Web</option>
+                <option value="Consultoría en Marketing">Consultoría en Marketing</option>
+                <option value="Eventos & Campañas BTL">Eventos & Campañas BTL</option>
+                <option value="Producción Audiovisual & Campañas ATL">Producción Audiovisual & Campañas ATL</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label>Descripción</label>
+              <input type="text" id="descripcion" placeholder="Descripción de la campaña">
+            </div>
+
+            <div class="form-row">
+              <label>Fecha Inicio</label>
+              <input type="date" id="fecha_inicio">
+            </div>
+
+            <div class="form-row">
+              <label>Fecha Fin</label>
+              <input type="date" id="fecha_fin">
+            </div>
+
+            <div class="form-row">
+              <label>Precio</label>
+              <input type="number" id="presupuesto" placeholder="1500" step="0.01">
+            </div>
+
+            <div class="form-row">
+              <label>Estado</label>
+              <select id="estado">
+                <option>Activa</option>
+                <option>Pausada</option>
+                <option>Finalizada</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-buttons">
+            <button class="save" id="btnGuardar" onclick="guardarCampania()">Guardar</button>
+            <button class="cancel" id="btnCancelar" onclick="limpiarFormulario()">Cancelar</button>
+            <button class="new" onclick="modoNuevo()">Nuevo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="insight-panel">
+          <h3>Estadísticas de Campañas</h3>
+          <div class="circle-chart">
+            <div class="inner-circle"><span>82%</span></div>
+          </div>
+          <p class="chart-label">Campañas activas</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Campaña</th>
+            <th>Cliente</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Presupuesto</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-campanias"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API_CLIENTES = "http://localhost:8080/clientes/listar";     // tu endpoint actual
+    const API_CAMPANIAS = "http://localhost:8080/api/campanias";      // tu endpoint actual
+
+    let clientes = [];
+    let campaniaSeleccionada = null; // guardará el objeto seleccionado (con su id)
+
+    const selectCliente = document.getElementById("id_cliente");
+    const buscarCliente = document.getElementById("buscar_cliente");
+    const tablaBody = document.getElementById("tabla-campanias");
+    const btnGuardar = document.getElementById("btnGuardar");
+    const btnCancelar = document.getElementById("btnCancelar");
+    const formTitle = document.getElementById("formTitle");
+
+    // ---------- Clientes ----------
+    async function cargarClientes() {
+      try {
+        const res = await fetch(API_CLIENTES);
+        if (!res.ok) throw new Error("Error al cargar clientes");
+        clientes = await res.json();
+        mostrarClientes(clientes);
+      } catch (err) {
+        console.error("Error cargarClientes:", err);
+        alert("Error al cargar los clientes (revisa consola)");
+      }
+    }
+
+    function mostrarClientes(lista) {
+      selectCliente.innerHTML = '<option value="">Seleccione un cliente</option>';
+      lista.forEach(c => {
+        // admite varios nombres de id que pueda devolver tu backend
+        const idVal = c.id ?? c.idCliente ?? c.id_cliente;
+        const nombre = (c.nombre ?? "") + (c.apellido ? " " + c.apellido : "");
+        const email = c.email ? ` (${c.email})` : "";
+        const option = document.createElement("option");
+        option.value = idVal;
+        option.textContent = `ID: ${idVal} - ${nombre}${email}`;
+        selectCliente.appendChild(option);
+      });
+    }
+
+    buscarCliente.addEventListener("input", () => {
+      const texto = buscarCliente.value.trim().toLowerCase();
+      if (!texto) { mostrarClientes(clientes); return; }
+      const filtrados = clientes.filter(c => {
+        const nombre = (c.nombre ?? "") + " " + (c.apellido ?? "");
+        return nombre.toLowerCase().includes(texto) || (c.email ?? "").toLowerCase().includes(texto) || String(c.id ?? c.idCliente ?? c.id_cliente).includes(texto);
+      });
+      mostrarClientes(filtrados);
+    });
+
+    // ---------- Guardar / Actualizar ----------
+    async function guardarCampania() {
+      const idClienteVal = selectCliente.value;
+      if (!idClienteVal) return alert("Selecciona un cliente");
+
+      const payload = {
+        idCliente: parseInt(idClienteVal, 10),
+        nombre: document.getElementById("nombre").value,
+        descripcion: document.getElementById("descripcion").value,
+        fechaInicio: document.getElementById("fecha_inicio").value || null,
+        fechaFin: document.getElementById("fecha_fin").value || null,
+        presupuesto: (document.getElementById("presupuesto").value !== "") ? parseFloat(document.getElementById("presupuesto").value) : null,
+        estado: document.getElementById("estado").value
+      };
+
+      try {
+        let res;
+        if (campaniaSeleccionada && (campaniaSeleccionadaId(campaniaSeleccionada) !== null)) {
+          // actualizar => PUT /api/campanias/{id}
+          const id = campaniaSeleccionadaId(campaniaSeleccionada);
+          res = await fetch(`${API_CAMPANIAS}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          // crear => POST /api/campanias
+          res = await fetch(API_CAMPANIAS, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (!res.ok) {
+          const txt = await res.text().catch(()=>null);
+          throw new Error(txt || res.statusText);
+        }
+
+        alert(campaniaSeleccionada ? "✅ Campaña actualizada" : "✅ Campaña registrada");
+        await cargarCampanias();
+        modoNuevo();
+      } catch (err) {
+        console.error("guardarCampania error:", err);
+        alert("Error al guardar/actualizar campaña (revisa consola)");
+      }
+    }
+
+    // helper: obtener id numérico del objeto campaña (admite varios campos)
+    function campaniaSeleccionadaId(c) {
+      if (!c) return null;
+      return c.id ?? c.idCampania ?? c.id_campania ?? null;
+    }
+
+    // ---------- Borrar ----------
+    async function borrarCampania() {
+      if (!campaniaSeleccionada) return;
+      const id = campaniaSeleccionadaId(campaniaSeleccionada);
+      if (!id) return alert("ID de campaña no encontrado.");
+      if (!confirm(`¿Seguro que deseas eliminar la campaña "${campaniaSeleccionada.nombre}"?`)) return;
+
+      try {
+        const res = await fetch(`${API_CAMPANIAS}/${id}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Error al eliminar campaña");
+        alert("🗑️ Campaña eliminada correctamente");
+        await cargarCampanias();
+        modoNuevo();
+      } catch (err) {
+        console.error("borrarCampania error:", err);
+        alert("Error al eliminar campaña (revisa consola)");
+      }
+    }
+
+    // ---------- Seleccionar campaña desde tabla ----------
+    function modoEdicion(camp) {
+      campaniaSeleccionada = camp;
+
+      // obtener idCliente del objeto campaña (puede estar en camp.idCliente, camp.id_cliente, o en camp.cliente.id)
+      const idClienteFromCamp = camp.idCliente ?? camp.id_cliente ?? (camp.cliente ? (camp.cliente.id ?? camp.cliente.idCliente ?? camp.cliente.id_cliente) : null);
+
+      // set campos
+      document.getElementById("id_campania").value = campaniaSeleccionadaId(camp) ?? "";
+      if (idClienteFromCamp !== null) selectCliente.value = String(idClienteFromCamp);
+      else selectCliente.value = "";
+
+      // seleccionar servicio (valor exactamente igual a opciones)
+      if (camp.nombre) {
+        // Normaliza coincidencia exacta: si la opción existe, la selecciona
+        const opt = Array.from(document.getElementById("nombre").options).find(o => o.value === camp.nombre);
+        if (opt) document.getElementById("nombre").value = camp.nombre;
+        else document.getElementById("nombre").value = ""; // si no coincide, dejar vacío
+      } else {
+        document.getElementById("nombre").value = "";
+      }
+
+      document.getElementById("descripcion").value = camp.descripcion ?? "";
+      // fechas: puede venir como fechaInicio o fecha_inicio, buscamos ambas
+      document.getElementById("fecha_inicio").value = camp.fechaInicio ?? camp.fecha_inicio ?? "";
+      document.getElementById("fecha_fin").value = camp.fechaFin ?? camp.fecha_fin ?? "";
+      document.getElementById("presupuesto").value = (camp.presupuesto != null) ? camp.presupuesto : "";
+      document.getElementById("estado").value = camp.estado ?? "Activa";
+
+      // botones / título
+      btnGuardar.textContent = "Actualizar";
+      btnCancelar.textContent = "Borrar";
+      btnCancelar.onclick = borrarCampania;
+      formTitle.textContent = "Editar Campaña";
+
+      // resalta visualmente la fila seleccionada (opcional)
+      highlightSelectedRow(camp);
+    }
+
+    function highlightSelectedRow(camp) {
+      // busca la fila que corresponda al id y la marca con clase 'selected' (agrega CSS si quieres)
+      const id = campaniaSeleccionadaId(camp);
+      Array.from(tablaBody.children).forEach(tr => tr.classList.remove("selected"));
+      const matching = Array.from(tablaBody.children).find(tr => tr.firstElementChild && tr.firstElementChild.textContent.trim() == String(id));
+      if (matching) matching.classList.add("selected");
+    }
+
+    // ---------- Limpiar / Modo nuevo ----------
+    function limpiarFormulario() {
+      document.getElementById("id_campania").value = "";
+      document.getElementById("nombre").value = "";
+      document.getElementById("descripcion").value = "";
+      document.getElementById("fecha_inicio").value = "";
+      document.getElementById("fecha_fin").value = "";
+      document.getElementById("presupuesto").value = "";
+      document.getElementById("estado").value = "Activa";
+      selectCliente.value = "";
+    }
+
+    function modoNuevo() {
+      campaniaSeleccionada = null;
+      limpiarFormulario();
+      btnGuardar.textContent = "Guardar";
+      btnCancelar.textContent = "Cancelar";
+      btnCancelar.onclick = limpiarFormulario;
+      formTitle.textContent = "Registrar Campaña";
+      Array.from(tablaBody.children).forEach(tr => tr.classList.remove("selected"));
+    }
+
+    // ---------- Cargar y mostrar campañas ----------
+    async function cargarCampanias() {
+      try {
+        const res = await fetch(API_CAMPANIAS);
+        if (!res.ok) throw new Error("Error al obtener campañas");
+        const lista = await res.json();
+        mostrarCampanias(lista);
+      } catch (err) {
+        console.error("cargarCampanias error:", err);
+      }
+    }
+
+    function mostrarCampanias(lista) {
+      tablaBody.innerHTML = "";
+      lista.forEach(camp => {
+        const id = camp.id ?? camp.idCampania ?? camp.id_campania ?? "-";
+        // cliente: intenta varias formas
+        const clienteStr = camp.cliente
+          ? `ID: ${camp.cliente.id ?? camp.cliente.idCliente ?? camp.cliente.id_cliente ?? "-"} - ${camp.cliente.nombre ?? ""} ${camp.cliente.apellido ?? ""}`
+          : (camp.idCliente ? `ID: ${camp.idCliente}` : "Sin cliente");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${id}</td>
+          <td>${clienteStr}</td>
+          <td>${camp.nombre ?? "-"}</td>
+          <td>${camp.descripcion ?? "-"}</td>
+          <td>${camp.fechaInicio ?? camp.fecha_inicio ?? "-"}</td>
+          <td>${camp.fechaFin ?? camp.fecha_fin ?? "-"}</td>
+          <td>${camp.presupuesto ?? "-"}</td>
+          <td>${camp.estado ?? "-"}</td>
+        `;
+        tr.addEventListener("click", () => modoEdicion(camp));
+        tablaBody.appendChild(tr);
+      });
+    }
+
+    // ---------- Inicialización ----------
+    window.addEventListener("load", async () => {
+      await cargarClientes();
+      await cargarCampanias();
+      modoNuevo();
+    });
+
+    // opcional: tecla Escape limpia formulario
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape") modoNuevo(); });
+  </script>
+
+  <style>
+    /* Pequeño estilo para fila seleccionada (si tu CSS ya define .selected, ignóralo) */
+    #tabla-campanias tr.selected { background: rgba(0,123,255,0.08); }
+    #tabla-campanias tr:hover { cursor: pointer; }
+  </style>
+</body>
+</html>
