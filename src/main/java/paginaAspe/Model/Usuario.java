@@ -2,6 +2,8 @@ package paginaAspe.Model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import paginaAspe.Model.Rol;
 
 @Entity
 @Table(name = "usuarios")
@@ -14,10 +16,24 @@ public class Usuario {
     private String username;
     private String email;
     private String password_hash;
+    @Column(name = "activo", nullable = false)
     private Boolean active = true;
     private LocalDateTime ultimo_acceso;
     private LocalDateTime created_at = LocalDateTime.now();
     private LocalDateTime updated_at = LocalDateTime.now();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rol_id", nullable = false)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private Rol rol;
+
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
 
     // Getters y setters
     public Long getUsuario_id() {

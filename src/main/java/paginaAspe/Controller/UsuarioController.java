@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import paginaAspe.Model.Usuario;
 import paginaAspe.Service.UsuarioService;
 import paginaAspe.Repository.UsuarioRepository;
+import paginaAspe.Repository.RolRepository;
+import paginaAspe.Model.Rol;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+     @Autowired
+     private RolRepository rolRepository;
+
     // Listar todos los usuarios
     @GetMapping("/listar")
     public List<Usuario> listar() {
@@ -30,10 +35,24 @@ public class UsuarioController {
     }
 
     // Guardar o actualizar usuario
+
     @PostMapping("/guardar")
-    public Usuario guardar(@RequestBody Usuario usuario) {
+    public Usuario guardar(@RequestBody Usuario usuario, @RequestParam(required = false) Long rolId) {
+        // Si el usuario no tiene rol asignado, intentamos asignar uno.
+        if (usuario.getRol() == null) {
+            Rol rol = null;
+            if (rolId != null) {
+                rol = rolRepository.findById(rolId).orElse(null);
+            }
+            // Si no se proporcionó rol o no existe, usamos el primer rol existente como defecto.
+            if (rol == null) {
+                rol = rolRepository.findAll().stream().findFirst().orElse(null);
+            }
+            usuario.setRol(rol);
+        }
         return usuarioService.guardar(usuario);
     }
+
 
     // Eliminar usuario por ID
     @DeleteMapping("/eliminar/{id}")

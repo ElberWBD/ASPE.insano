@@ -6,6 +6,7 @@ import paginaAspe.Model.Campania;
 import paginaAspe.Service.CampaniaService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/campanias")
@@ -65,4 +66,34 @@ public class CampaniaController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/cliente/{clienteId}")
+    public List<Campania> listarPorCliente(@PathVariable Long clienteId) {
+        return service.obtenerPorCliente(clienteId);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public List<Campania> listarPorUsuario(@PathVariable Long usuarioId) {
+        return service.obtenerPorUsuario(usuarioId);
+    }
+
+    @PutMapping("/{id}/asignar/{usuarioId}")
+    public ResponseEntity<Campania> asignarUsuario(@PathVariable Long id, @PathVariable Long usuarioId) {
+        Campania result = service.asignarUsuario(id, usuarioId);
+        if (result != null) {
+            return ResponseEntity.ok(result);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<Campania> actualizarEstado(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String nuevoEstado = body.get("estado");
+        Campania result = service.actualizarEstado(id, nuevoEstado);
+        if (result != null) {
+            return ResponseEntity.ok(result);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 }

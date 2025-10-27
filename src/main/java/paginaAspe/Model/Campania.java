@@ -37,7 +37,19 @@ public class Campania {
     @Column(length = 50)
     private String estado;
 
+    @Column(name = "usuario_id")
+    private Long usuarioId;
+
     // Getters y Setters
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
     public Long getIdCampania() { return idCampania; }
     public void setIdCampania(Long idCampania) { this.idCampania = idCampania; }
 

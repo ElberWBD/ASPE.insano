@@ -33,4 +33,40 @@ public class CampaniaService {
     public void eliminar(Long id) {
         repo.deleteById(id);
     }
+
+    public List<Campania> obtenerPorCliente(Long clienteId) {
+        return repo.findByIdCliente(clienteId);
+    }
+
+    public List<Campania> obtenerPorUsuario(Long usuarioId) {
+        return repo.findByUsuarioId(usuarioId);
+    }
+
+    public Campania asignarUsuario(Long campaniaId, Long usuarioId) {
+        Optional<Campania> opt = repo.findById(campaniaId);
+        if (opt.isPresent()) {
+            Campania c = opt.get();
+            c.setUsuarioId(usuarioId);
+            // al asignar un usuario podemos cambiar estado a 'Asignada'
+            if (c.getEstado() == null || c.getEstado().isEmpty()) {
+                c.setEstado("Asignada");
+            }
+            return repo.save(c);
+        }
+        return null;
+    }
+
+    public Campania actualizarEstado(Long campaniaId, String estado) {
+        Optional<Campania> opt = repo.findById(campaniaId);
+        if (opt.isPresent()) {
+            Campania c = opt.get();
+            c.setEstado(estado);
+            return repo.save(c);
+        }
+        return null;
+    }
+
+    
+
+
 }
