@@ -48,7 +48,7 @@
       <div class="bottom-half">
         <div class="crud-section">
           <div class="edit-form">
-            <h2>Registrar / Editar Usuario</h2>
+            <h2>Editar Usuario</h2>
             <div class="form-grid">
               <div class="form-row"><label>ID</label><input id="usuario_id" type="text" readonly></div>
               <div class="form-row"><label>Nombre</label><input id="username" type="text"></div>
@@ -232,6 +232,16 @@
   
     // Init
     cargarUsuarios();
+
+    document.getElementById('buscar').addEventListener('input', function () {
+    const filtro = this.value.toLowerCase();
+    const filas = document.querySelectorAll('#tablaUsuarios tbody tr');
+    filas.forEach(fila => {
+      const textoFila = fila.textContent.toLowerCase();
+      // Muestra la fila solo si contiene el texto de búsqueda
+      fila.style.display = textoFila.includes(filtro) ? '' : 'none';
+    });
+  });
   </script>
   
 

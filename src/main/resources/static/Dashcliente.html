@@ -12,7 +12,7 @@
   <div class="sidebar">
     <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
     <a href="/Dashcliente.html" class="active"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
-    <a href="/Dashcampania.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
     <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
     <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
     <div class="spacer"></div>
@@ -49,7 +49,7 @@
     <div class="bottom-section">
       <div class="left-section">
         <div class="edit-form">
-          <h2>Registrar / Editar Cliente</h2>
+          <h2>Editar Cliente</h2>
           <div class="form-grid">
             <div class="form-row">
               <label>ID</label>
@@ -92,19 +92,20 @@
           <h3>Resumen General</h3>
           <div class="circle-chart">
             <div class="inner-circle">
-              <span>76%</span>
+              <span id="clientes-activos-percentage">0%</span>
             </div>
           </div>
           <p class="chart-label">Clientes activos</p>
           <div class="stats">
-            <div class="stat"><h4>156</h4><p>Registrados</p></div>
-            <div class="stat"><h4>28</h4><p>Campañas</p></div>
-            <div class="stat"><h4>5</h4><p>Revisión</p></div>
+            <div class="stat"><h4 id="clientes-registrados-count">0</h4><p>Registrados</p></div>
+            <div class="stat"><h4 id="campanias-count">0</h4><p>Campañas</p></div>
+            <div class="stat"><h4 id="revision-count">0</h4><p>Revisión</p></div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
 
   <!-- ====================== SCRIPT JS ====================== -->
   <script>
@@ -219,6 +220,41 @@
         fila.style.display = textoFila.includes(filtro) ? "" : "none";
       });
     }
+
+    async function actualizarResumen() {
+  try {
+    const campRes = await fetch('http://localhost:8080/api/campanias');
+    const clientesRes = await fetch('http://localhost:8080/clientes/listar');
+    const campanias = await campRes.json();
+    const clientes  = await clientesRes.json();
+
+    // totales
+    const totalClientes = clientes.length;
+    const totalCamp     = campanias.length;
+    // campañas no finalizadas
+    const revisiones    = campanias.filter(c => (c.estado || '').toLowerCase() !== 'finalizada').length;
+    // clientes que tienen al menos una campaña activa
+    const conActivas = new Set(campanias.filter(c => (c.estado || '').toLowerCase().includes('activa')).map(c => c.idCliente));
+
+    document.getElementById('clientes-registrados-count').textContent = totalClientes;
+    document.getElementById('campanias-count').textContent            = totalCamp;
+    document.getElementById('revision-count').textContent             = revisiones;
+
+    const porcentaje = totalClientes ? Math.round((conActivas.size / totalClientes) * 100) : 0;
+    document.getElementById('clientes-activos-percentage').textContent = porcentaje + '%';
+  } catch (err) {
+    console.error('Error actualizando resumen:', err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  listarClientes();
+  actualizarResumen();
+});
+
+
   </script>
+
+
 </body>
 </html>
