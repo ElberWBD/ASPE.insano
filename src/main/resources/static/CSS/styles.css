@@ -1674,4 +1674,34 @@ a {
     font-size: 16px;
     padding: 8px 12px;
   }
+
+
+
+  /* Aumenta la separación entre elementos de la cabecera */
+.header-buttons {
+  gap: 16px; /* antes era 10px:contentReference[oaicite:2]{index=2} */
+}
+
+/* Estilo del mensaje de bienvenida */
+.welcome-user {
+  font-weight: bold;
+  color: #fff;
+  margin-left: 8px;
+}
+
+/* Estilo para el botón de cerrar sesión */
+.logout-button {
+  background-color: #60ee99cb;  /* mismo tono verde translúcido que los íconos:contentReference[oaicite:3]{index=3} */
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 40px;          /* similar a btn-submit:contentReference[oaicite:4]{index=4} */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #58d28c;    /* tono ligeramente más oscuro al pasar el cursor */
+}
+
 }

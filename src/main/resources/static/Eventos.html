@@ -26,7 +26,9 @@
           </ul>
       
           <div class="header-buttons">
-            <button class="btn-submit" onclick="location.href='Login.html';">Iniciar sesión</button>
+            <button id="loginButton" class="btn-submit" onclick="location.href='Login.html';">Iniciar sesión</button>
+            <span id="welcomeUser" class="user-name"></span>
+            <a href="#" id="logoutButton" onclick="cerrarSesionCliente()" style="display:none;">Cerrar sesión</a>
             <button class="boton-persona" onclick="location.href='Usuario.html';">
               <img src="IMG/descarga.webp" alt="Usuario">
             </button>
@@ -255,9 +257,7 @@
     <script src="JS/script6.js"></script>
     <script src="JS/script7.js"></script>
     <script src="JS/scriptbotoncelular.js"></script>
-
-    
-      
+    <script src="JS/session.js"></script>
       
       
     </body>

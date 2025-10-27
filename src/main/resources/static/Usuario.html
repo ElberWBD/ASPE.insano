@@ -11,48 +11,42 @@
     <aside class="barra">
       <h2>Usuario</h2>
       <ul>
-        <li class="activo" onclick="mostrarSeccion('datos')">Datos</li>
-        <li onclick="mostrarSeccion('campanas')">Campañas</li>
-        <li onclick="mostrarSeccion('eliminar')">Eliminar cuenta</li>
+        <!-- Cada elemento llama a mostrarSeccion con el id de la sección y pasa this para marcarlo activo -->
+        <li id="nav-datos" class="activo" onclick="mostrarSeccion('datos', this)">Datos</li>
+        <li id="nav-campanas" onclick="mostrarSeccion('campanas', this)">Campañas</li>
+        <li id="nav-eliminar" onclick="mostrarSeccion('eliminar', this)">Eliminar cuenta</li>
         <li onclick="volverInicio()">Volver</li>
       </ul>
     </aside>
-
     <main class="contenido">
-      <!-- DATOS -->
+      <!-- Sección Datos: muestra y permite editar los datos del cliente -->
       <section id="datos" class="seccion activa">
         <h2>Datos del Usuario</h2>
-        <form class="formulario">
+        <form class="formulario" onsubmit="event.preventDefault(); guardarCambios();">
           <div class="campo">
             <label>ID:</label>
             <input id="idCliente" type="text" readonly>
           </div>
-
           <div class="campo">
             <label>Nombre:</label>
             <input id="nombre" type="text">
           </div>
-
           <div class="campo">
             <label>Apellido:</label>
             <input id="apellido" type="text">
           </div>
-
           <div class="campo">
             <label>Razón Social:</label>
             <input id="razonSocial" type="text">
           </div>
-
           <div class="campo">
             <label>Email:</label>
             <input id="email" type="email">
           </div>
-
           <div class="campo">
             <label>Teléfono:</label>
             <input id="telefono" type="text">
           </div>
-
           <div class="campo">
             <label>Contraseña:</label>
             <div style="display: flex; align-items: center; gap: 5px;">
@@ -60,163 +54,334 @@
               <button type="button" id="togglePassword">👁</button>
             </div>
           </div>
-
           <div class="campo">
             <label>Fecha de creación:</label>
             <input id="fechaCreacion" type="text" readonly>
           </div>
-
-          <button type="button" onclick="guardarCambios()">Guardar Cambios</button>
+          <button type="submit">Guardar Cambios</button>
         </form>
       </section>
-
-      <!-- CAMPAÑAS -->
+      <!-- Sección Campañas: navegación interna y contenedores para listar y crear campañas -->
       <section id="campanas" class="seccion">
-        <h2>Mis Campañas</h2>
-        <div class="campana-lista">
-          <div class="campana-card" onclick="abrirModal('Proyecto Web Empresarial')">
-            <h3>Proyecto Web Empresarial</h3>
-            <p>Estado: <span class="estado aprobado">Aprobado</span></p>
-          </div>
-          <div class="campana-card" onclick="abrirModal('Campaña de Redes Sociales')">
-            <h3>Campaña de Redes Sociales</h3>
-            <p>Estado: <span class="estado pendiente">Pendiente</span></p>
-          </div>
-          <div class="campana-card" onclick="abrirModal('Landing Page Promocional')">
-            <h3>Landing Page Promocional</h3>
-            <p>Estado: <span class="estado en-progreso">En progreso</span></p>
-          </div>
+        <h2>Campañas</h2>
+        <div class="tabs-campanas">
+          <button id="btnMisCampanas" class="tab-button" onclick="mostrarMisCampanas()">Mis campañas</button>
+          <button id="btnNuevaCampana" class="tab-button" onclick="mostrarNuevaCampana()">Nueva campaña</button>
+        </div>
+        <!-- Listado de campañas -->
+        <div id="mis-campanas" class="subseccion">
+          <div id="listaCampanas" class="lista-campanas"></div>
+        </div>
+        <!-- Formulario para crear una nueva campaña -->
+        <div id="nueva-campana" class="subseccion" style="display:none;">
+          <form id="formNuevaCampana" onsubmit="crearCampana(event)">
+            <div class="campo">
+              <label>Nombre:</label>
+              <input type="text" id="nombreCampana" required>
+            </div>
+            <div class="campo">
+              <label>Descripción:</label>
+              <textarea id="descripcionCampana" required></textarea>
+            </div>
+            <div class="campo">
+              <label>Fecha inicio:</label>
+              <input type="date" id="fechaInicioCampana" required>
+            </div>
+            <div class="campo">
+              <label>Fecha fin:</label>
+              <input type="date" id="fechaFinCampana" required>
+            </div>
+            <div class="campo">
+              <label>Presupuesto:</label>
+              <input type="number" id="presupuestoCampana" min="0" required>
+            </div>
+            <div class="campo">
+              <label>Entregables (opcional):</label>
+              <input type="file" id="entregablesCampana" multiple>
+            </div>
+            <button type="submit">Crear campaña</button>
+          </form>
         </div>
       </section>
-
-      <!-- ELIMINAR -->
+      <!-- Sección Eliminar: elimina la cuenta del cliente -->
       <section id="eliminar" class="seccion">
         <h2>Eliminar Cuenta</h2>
         <p>Esta acción eliminará permanentemente tu cuenta y todos tus datos.</p>
-        <button class="eliminar-btn">Eliminar Cuenta</button>
+        <button class="eliminar-btn" onclick="eliminarCuenta()">Eliminar Cuenta</button>
       </section>
     </main>
   </div>
-
-  <!-- MODAL -->
-  <div id="modal" class="modal">
-    <div class="modal-contenido">
+  <!-- Modal para mostrar detalles de campaña -->
+  <div id="modal" class="modal" style="display:none;">
+    <div id="modal-content" class="modal-contenido">
       <span class="cerrar" onclick="cerrarModal()">&times;</span>
-      <h3 id="modal-titulo"></h3>
-      <p><strong>Estado:</strong> <span id="modal-estado">Aprobado</span></p>
-      <div class="chat">
-        <div class="mensaje programador">Hola, el proyecto está casi listo.</div>
-        <div class="mensaje usuario">Perfecto, espero la versión final.</div>
-        <input type="text" placeholder="Escribe un mensaje...">
-      </div>
     </div>
   </div>
-
   <script>
-    // === Cargar datos del usuario ===
-    document.addEventListener("DOMContentLoaded", async () => {
-      const clienteId = sessionStorage.getItem("clienteId");
-      if (!clienteId) {
-        alert("⚠️ No has iniciado sesión.");
-        window.location.href = "Login.html";
-        return;
-      }
+    // Obtener ID de cliente de sessionStorage
+    const clienteId = sessionStorage.getItem('clienteId');
+    // Redirigir a login si no hay sesión
+    if (!clienteId) {
+      window.location.href = 'Login.html';
+    }
 
+    /**
+     * Cargar los datos del cliente y rellenar el formulario.
+     */
+    async function cargarDatosCliente() {
       try {
         const response = await fetch(`http://localhost:8080/clientes/buscarPorId/${clienteId}`);
         if (response.ok) {
           const cliente = await response.json();
-
-          // Ajustar nombres a camelCase
-          document.getElementById("idCliente").value = cliente.id || "";
-          document.getElementById("nombre").value = cliente.nombre || "";
-          document.getElementById("apellido").value = cliente.apellido || "";
-          document.getElementById("razonSocial").value = cliente.razonSocial || "";
-          document.getElementById("email").value = cliente.email || "";
-          document.getElementById("telefono").value = cliente.telefono || "";
-          document.getElementById("password").value = cliente.password || "";
-          document.getElementById("fechaCreacion").value = cliente.fechaCreacion || "";
+          document.getElementById('idCliente').value = cliente.id || '';
+          document.getElementById('nombre').value = cliente.nombre || '';
+          document.getElementById('apellido').value = cliente.apellido || '';
+          document.getElementById('razonSocial').value = cliente.razonSocial || '';
+          document.getElementById('email').value = cliente.email || '';
+          document.getElementById('telefono').value = cliente.telefono || '';
+          // No mostrar la contraseña real; pedir nueva si se quiere cambiar
+          document.getElementById('password').value = cliente.password || '';
+          document.getElementById('fechaCreacion').value = cliente.fechaCreacion || '';
         } else {
-          alert("❌ No se encontraron datos del cliente.");
+          alert('❌ No se encontraron datos del cliente');
         }
-      } catch (error) {
-        console.error("Error al cargar datos:", error);
+      } catch (err) {
+        console.error('Error al cargar datos', err);
       }
-    });
+    }
 
-    // === Mostrar / ocultar contraseña ===
-    document.addEventListener("click", (e) => {
-      if (e.target.id === "togglePassword") {
-        const passInput = document.getElementById("password");
-        if (passInput.type === "password") {
-          passInput.type = "text";
-          e.target.textContent = "🙈";
-        } else {
-          passInput.type = "password";
-          e.target.textContent = "👁";
-        }
-      }
-    });
-
-    // === Guardar cambios ===
+    /**
+     * Guardar los cambios realizados en los datos del cliente.
+     */
     async function guardarCambios() {
-      const clienteId = sessionStorage.getItem("clienteId");
-      if (!clienteId) {
-        alert("⚠️ No has iniciado sesión.");
-        return;
-      }
-
-      const cliente = {
+      const data = {
         id: clienteId,
-        nombre: document.getElementById("nombre").value,
-        apellido: document.getElementById("apellido").value,
-        razonSocial: document.getElementById("razonSocial").value,
-        email: document.getElementById("email").value,
-        telefono: document.getElementById("telefono").value,
-        password: document.getElementById("password").value,
-        fechaCreacion: document.getElementById("fechaCreacion").value
+        nombre: document.getElementById('nombre').value,
+        apellido: document.getElementById('apellido').value,
+        razonSocial: document.getElementById('razonSocial').value,
+        email: document.getElementById('email').value,
+        telefono: document.getElementById('telefono').value,
+        password: document.getElementById('password').value,
+        fechaCreacion: document.getElementById('fechaCreacion').value
       };
-
       try {
         const response = await fetch(`http://localhost:8080/clientes/actualizar/${clienteId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cliente)
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
         });
-
         if (response.ok) {
-          alert("✅ Datos actualizados correctamente");
+          alert('✅ Datos actualizados correctamente');
         } else {
           const text = await response.text();
-          console.error("Error actualizar:", text);
-          alert("❌ Error al actualizar los datos");
+          console.error('Error al actualizar', text);
+          alert('❌ No se pudo actualizar');
         }
-      } catch (error) {
-        console.error("Error al guardar:", error);
-        alert("⚠️ No se pudo conectar con el servidor.");
+      } catch (err) {
+        console.error('guardarCambios', err);
       }
     }
 
-    // === Navegación ===
-    function mostrarSeccion(id) {
-      document.querySelectorAll(".seccion").forEach(sec => sec.classList.remove("activa"));
-      document.getElementById(id).classList.add("activa");
-      document.querySelectorAll(".barra ul li").forEach(li => li.classList.remove("activo"));
-      event.target.classList.add("activo");
+    /**
+     * Mostrar la sección indicada y resaltar el elemento del menú.
+     * Si es la sección de campañas, cargar la lista de campañas.
+     */
+    function mostrarSeccion(id, elemento) {
+      document.querySelectorAll('.seccion').forEach(sec => sec.classList.remove('activa'));
+      document.getElementById(id).classList.add('activa');
+      document.querySelectorAll('.barra ul li').forEach(li => li.classList.remove('activo'));
+      if (elemento) elemento.classList.add('activo');
+      if (id === 'campanas') {
+        mostrarMisCampanas();
+        cargarCampanas();
+      }
     }
 
-    function abrirModal(nombre) {
-      document.getElementById("modal-titulo").textContent = nombre;
-      document.getElementById("modal").style.display = "flex";
+    /**
+     * Cargar las campañas del cliente desde la API y renderizarlas.
+     */
+    async function cargarCampanas() {
+      try {
+        const res = await fetch(`http://localhost:8080/api/campanias/cliente/${clienteId}`);
+        if (!res.ok) throw new Error('Error al obtener campañas');
+        const campanias = await res.json();
+        pintarCampanas(campanias);
+      } catch (err) {
+        console.error('cargarCampanas', err);
+      }
     }
 
+    /**
+     * Renderizar la lista de campañas en el contenedor #listaCampanas.
+     */
+    function pintarCampanas(campanias) {
+      const contenedor = document.getElementById('listaCampanas');
+      contenedor.innerHTML = '';
+      if (!campanias || campanias.length === 0) {
+        contenedor.innerHTML = '<p>No tienes campañas registradas.</p>';
+        return;
+      }
+      campanias.forEach(camp => {
+        const card = document.createElement('div');
+        card.className = 'card-campana';
+        card.innerHTML = `
+          <h4>${camp.nombre}</h4>
+          <p><strong>Estado:</strong> ${camp.estado ?? 'Pendiente'}</p>
+          <p><strong>Presupuesto:</strong> $${camp.presupuesto ?? '0'}</p>
+          <button onclick='mostrarDetallesCampana(${JSON.stringify(camp)})'>Detalles</button>`;
+        contenedor.appendChild(card);
+      });
+    }
+
+    /**
+     * Mostrar el contenedor de mis campañas y ocultar el de nueva campaña.
+     */
+    function mostrarMisCampanas() {
+      document.getElementById('mis-campanas').style.display = 'block';
+      document.getElementById('nueva-campana').style.display = 'none';
+    }
+
+    /**
+     * Mostrar el formulario para crear una nueva campaña y ocultar el listado.
+     */
+    function mostrarNuevaCampana() {
+      document.getElementById('mis-campanas').style.display = 'none';
+      document.getElementById('nueva-campana').style.display = 'block';
+    }
+
+    /**
+     * Convertir los archivos seleccionados a Base64. Devuelve un array de cadenas.
+     */
+    function convertirArchivosA64(files) {
+      const promesas = [];
+      for (const file of files) {
+        promesas.push(new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        }));
+      }
+      return Promise.all(promesas);
+    }
+
+    /**
+     * Crear una nueva campaña enviando los datos al backend.
+     */
+    async function crearCampana(event) {
+      event.preventDefault();
+      const nombre = document.getElementById('nombreCampana').value;
+      const descripcion = document.getElementById('descripcionCampana').value;
+      const fechaInicio = document.getElementById('fechaInicioCampana').value;
+      const fechaFin = document.getElementById('fechaFinCampana').value;
+      const presupuesto = document.getElementById('presupuestoCampana').value;
+      const files = document.getElementById('entregablesCampana').files;
+      let entregablesB64 = [];
+      if (files.length > 0) {
+        try {
+          entregablesB64 = await convertirArchivosA64(files);
+        } catch (err) {
+          console.error('Error al convertir archivos', err);
+        }
+      }
+      const nuevaCampana = {
+        idCliente: clienteId,
+        nombre,
+        descripcion,
+        fechaInicio,
+        fechaFin,
+        presupuesto: Number(presupuesto),
+        estado: 'Pendiente',
+        entregables: entregablesB64
+      };
+      try {
+        const res = await fetch('http://localhost:8080/api/campanias', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(nuevaCampana)
+        });
+        if (!res.ok) throw new Error('Error al crear campaña');
+        // Volver a cargar campañas y limpiar formulario
+        await cargarCampanas();
+        mostrarMisCampanas();
+        document.getElementById('formNuevaCampana').reset();
+        alert('Campaña creada con éxito');
+      } catch (err) {
+        console.error('crearCampana', err);
+      }
+    }
+
+    /**
+     * Mostrar los detalles de una campaña en un modal.
+     */
+    function mostrarDetallesCampana(camp) {
+      const modal = document.getElementById('modal');
+      const modalContent = document.getElementById('modal-content');
+      modalContent.innerHTML = `
+        <span class="cerrar" onclick="cerrarModal()">&times;</span>
+        <h3>${camp.nombre}</h3>
+        <p><strong>Descripción:</strong> ${camp.descripcion}</p>
+        <p><strong>Fecha inicio:</strong> ${camp.fechaInicio}</p>
+        <p><strong>Fecha fin:</strong> ${camp.fechaFin}</p>
+        <p><strong>Presupuesto:</strong> $${camp.presupuesto}</p>
+        <p><strong>Estado:</strong> ${camp.estado ?? 'Pendiente'}</p>
+      `;
+      modal.style.display = 'flex';
+    }
+
+    /**
+     * Cerrar el modal de detalles de campaña.
+     */
     function cerrarModal() {
-      document.getElementById("modal").style.display = "none";
+      document.getElementById('modal').style.display = 'none';
     }
 
-    function volverInicio() {
-      window.location.href = "Index.html";
+    /**
+     * Eliminar la cuenta del cliente. Envía DELETE al backend, limpia sessionStorage y redirige.
+     */
+    async function eliminarCuenta() {
+      if (!confirm('¿Estás seguro de que deseas eliminar tu cuenta?')) return;
+      try {
+        const res = await fetch(`http://localhost:8080/clientes/${clienteId}`, { method: 'DELETE' });
+        if (res.ok) {
+          alert('Cuenta eliminada correctamente');
+          sessionStorage.removeItem('clienteId');
+          sessionStorage.removeItem('clienteNombre');
+          sessionStorage.removeItem('clienteEmail');
+          window.location.href = 'Index.html';
+        } else {
+          alert('Error al eliminar la cuenta');
+        }
+      } catch (err) {
+        console.error('eliminarCuenta', err);
+      }
     }
+
+    /**
+     * Volver a la página de inicio pública, conservando la sesión para personalizarla.
+     */
+    function volverInicio() {
+      window.location.href = 'Index.html';
+    }
+
+    // Mostrar u ocultar contraseña al hacer clic en el icono
+    document.addEventListener('click', (e) => {
+      if (e.target.id === 'togglePassword') {
+        const passInput = document.getElementById('password');
+        if (passInput.type === 'password') {
+          passInput.type = 'text';
+          e.target.textContent = '🙈';
+        } else {
+          passInput.type = 'password';
+          e.target.textContent = '👁';
+        }
+      }
+    });
+
+    // Al cargar la página, cargar datos del cliente y no campañas hasta que se seleccione la pestaña
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarDatosCliente();
+    });
   </script>
 </body>
 </html>
