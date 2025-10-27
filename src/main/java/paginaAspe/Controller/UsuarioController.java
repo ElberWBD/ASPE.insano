@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin("*") 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -25,8 +25,8 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-     @Autowired
-     private RolRepository rolRepository;
+    @Autowired
+    private RolRepository rolRepository;
 
     // Listar todos los usuarios
     @GetMapping("/listar")
@@ -44,7 +44,8 @@ public class UsuarioController {
             if (rolId != null) {
                 rol = rolRepository.findById(rolId).orElse(null);
             }
-            // Si no se proporcionó rol o no existe, usamos el primer rol existente como defecto.
+            // Si no se proporcionó rol o no existe, usamos el primer rol existente como
+            // defecto.
             if (rol == null) {
                 rol = rolRepository.findAll().stream().findFirst().orElse(null);
             }
@@ -52,7 +53,6 @@ public class UsuarioController {
         }
         return usuarioService.guardar(usuario);
     }
-
 
     // Eliminar usuario por ID
     @DeleteMapping("/eliminar/{id}")
@@ -66,19 +66,21 @@ public class UsuarioController {
         String password = credenciales.get("password");
 
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
-
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
             // Validamos contraseña y si está activo
             if (usuario.getPassword_hash().equals(password) && usuario.getActive()) {
                 return ResponseEntity.ok(Map.of(
-                    "usuario", usuario.getUsername(),
-                    "mensaje", "Inicio de sesión exitoso"
-                ));
+                        "usuarioId", usuario.getUsuario_id(),
+                        "username", usuario.getUsername(),
+                        "email", usuario.getEmail(),
+                        "rol", usuario.getRol() != null ? usuario.getRol().getNombre() : null,
+                        "profesion", usuario.getProfesion(),
+                        "mensaje", "Inicio de sesión exitoso"));
             }
         }
-
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Correo o contraseña incorrectos"));
     }
+
 }

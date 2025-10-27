@@ -26,6 +26,17 @@ public class Usuario {
     @JoinColumn(name = "rol_id", nullable = false)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Rol rol;
+    @Column(name = "profesion")
+    private String profesion;
+
+
+    public String getProfesion() {
+        return profesion;
+    }
+
+    public void setProfesion(String profesion) {
+        this.profesion = profesion;
+    }
 
     public Rol getRol() {
         return rol;
