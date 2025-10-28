@@ -1,0 +1,222 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #c5e6d2cb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #000;
+  }
+  
+  .contenedor {
+    display: flex;
+    width: 1000px;
+    height: 650px;
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+  
+  .barra {
+    width: 220px;
+    background: #60ee99cb;
+    padding: 25px;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
+  }
+  
+  .barra h2 {
+    margin-bottom: 30px;
+    font-size: 22px;
+  }
+  
+  .barra ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .barra ul li {
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: background 0.3s;
+    font-weight: 500;
+  }
+  
+  .barra ul li:hover,
+  .barra ul li.activo {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .contenido {
+    flex: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
+  }
+  
+  .seccion {
+    display: none;
+  }
+  
+  .seccion.activa {
+    display: block;
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+  }
+  
+  .formulario {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .campo {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .campo label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .campo input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+  }
+  
+  button {
+    grid-column: span 2;
+    padding: 12px;
+    background: #60ee99cb;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  button:hover {
+    background: #4cd686;
+  }
+  
+  /* Campañas */
+  .campana-lista {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .campana-card {
+    background: #f9f9f9;
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+  }
+  
+  .campana-card:hover {
+    transform: scale(1.02);
+  }
+  
+  .estado {
+    font-weight: bold;
+  }
+  
+  .estado.aprobado {
+    color: green;
+  }
+  
+  .estado.pendiente {
+    color: orange;
+  }
+  
+  .estado.en-progreso {
+    color: blue;
+  }
+  
+  /* Modal */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-contenido {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    width: 400px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  }
+  
+  .cerrar {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+  }
+  
+  .chat {
+    margin-top: 20px;
+  }
+  
+  .mensaje {
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    max-width: 90%;
+  }
+  
+  .mensaje.programador {
+    background: #60ee99cb;
+    color: white;
+    align-self: flex-start;
+  }
+  
+  .mensaje.usuario {
+    background: #ddd;
+    align-self: flex-end;
+  }
+  
+  .chat input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  .eliminar-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .eliminar-btn:hover {
+    background: darkred;
+  }
+  

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../CSS/InicioSesion(A).css" rel="Stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/CSS/Login-estilos/main.css">
+    <title>Inicio Sesion del Usuario</title>
+</head>
+<body>
+    <div class="Contenedor">
+        <img class="Logotipo" src="../static/IMG/02.jpg" alt="Logotipo">
+            <div class="Contenedordeadentro">
+                <img src="../static/IMG/Gato.webp" alt="Imagen">
+                 <div class="Contenedordesubadentro">
+                       <h1>BIENVENIDO USUARIO</h1>
+                        <h3>Correo Electronico:</h3>
+                        <input type="text" placeholder="Ingresar Correo Electronico">
+                        <h3>Contraseña:</h3>
+                        <input type="text" placeholder="Ingresar Contraseña">
+                 </div>
+            </div>
+            <div class="ContenedorSiguiente">
+                <button>
+                     <a href="../static/Index.html">Iniciar Sesion</a>
+                </button>
+                <button>
+                      <a href="../static/Register.html">Registrarse</a>
+                </button>
+            </div>
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const loginButton = document.querySelector('.ContenedorSiguiente button:nth-child(1)');
+    const loginLink = loginButton.querySelector('a');
+    const emailInput = document.querySelector('input[placeholder="Ingresar Correo Electronico"]');
+    const passwordInput = document.querySelector('input[placeholder="Ingresar Contraseña"]');
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    loginButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        if (email === '') {
+            alert('El campo de Correo Electrónico no puede estar vacío.');
+            emailInput.focus();
+            return;
+        } else if (!isValidEmail(email)) {
+            alert('Por favor, ingresa un Correo Electrónico con un formato válido (ej. usuario@dominio.com).');
+            emailInput.focus();
+            return;
+        }
+        if (password === '') {
+            alert('El campo de Contraseña no puede estar vacío.');
+            passwordInput.focus();
+            return;
+        }
+        alert(`Validación Correcta. Intentando iniciar sesión para: ${email}`);
+        window.location.href = loginLink.getAttribute('href');
+    });
+});
+</script>
+</html>

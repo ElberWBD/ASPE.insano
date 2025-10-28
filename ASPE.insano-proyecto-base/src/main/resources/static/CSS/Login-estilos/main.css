@@ -1,0 +1,405 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Reset Básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+            margin: 0;
+            padding: 50px 20px; /* Mantenemos el padding vertical para el scroll */
+            font-family: 'Poppins', sans-serif;
+            /* Gradiente principal */
+            background: #3C004F;
+            background: linear-gradient(to bottom, #3C004F 0%, #000000 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
+            overflow-y: auto;   /* Permitir scroll vertical, soluciona el problema de corte */
+            position: relative;
+        }
+
+        /* Fondo animado con "partículas" (grandes luces) - MODIFICADO PARA NO MOSTRAR EL MORADO EXTRA */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* CAMBIO: Fondo con un color que se mezcla con el del body */
+            background: rgba(0, 0, 0, 0.4); /* Un negro semi-transparente */
+            animation: backgroundMove 20s ease-in-out infinite alternate; 
+            z-index: -1;
+        }
+
+        @keyframes backgroundMove {
+            0% {
+                transform: scale(1) rotate(0deg) translate(0, 0);
+            }
+            50% {
+                transform: scale(1.1) rotate(3deg) translate(5vw, 5vh);
+            }
+            100% {
+                transform: scale(1) rotate(0deg) translate(0, 0);
+            }
+        }
+
+        /* Contenedor principal con borde animado */
+        .Contenedor {
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 50px; /* Más padding para desktop */
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 1000px; /* OPTIMIZADO PARA ESCRITORIO */
+            box-sizing: border-box;
+            animation: fadeIn 1s ease-out;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+/* Borde animado exterior - EFECTO GIRATORIO MEJORADO */
+.Contenedor::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background-size: 400% 400%;
+    border-radius: 25px;
+    z-index: -1;
+    /* Animación más rápida para un giro continuo */
+    animation: borderAnimation 4s linear infinite; 
+    filter: blur(10px); /* Desenfoque más intenso (efecto neón) */
+    opacity: 0.8; /* Más visible */
+}
+
+@keyframes borderAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Logo con animación flotante */
+.Logotipo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 20px;
+    animation: logoFloat 3s ease-in-out infinite alternate; /* Agregado 'alternate' */
+    filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes logoFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-15px) rotate(1deg);
+    }
+}
+
+.Contenedordeadentro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+    gap: 25px; /* Espaciado un poco más grande */
+}
+
+/* Imagen con animación de pulso y sombra más profunda */
+.Contenedordeadentro img {
+    width: 60%;
+    height: 500px;
+    border-radius: 10%;
+    margin-bottom: 15px;
+    animation: imagePulse 4s ease-in-out infinite;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
+    transition: transform 0.5s ease;
+}
+
+@keyframes imagePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05); /* Pulso un poco más grande */
+    }
+}
+
+.Contenedordesubadentro {
+    width: 100%;
+    text-align: left;
+}
+
+/* Título con efecto de brillo (glow) */
+.Contenedordesubadentro h1 {
+    text-align: center;
+    color: #3C004F;
+    margin-bottom: 25px;
+    font-size: 2em; /* Título un poco más grande */
+    animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    from {
+        text-shadow: 0 0 5px rgba(60, 0, 79, 0.5);
+    }
+    to {
+        text-shadow: 0 0 15px rgba(60, 0, 79, 0.9), 0 0 25px rgba(60, 0, 79, 0.7); /* Brillo más fuerte */
+    }
+}
+
+.Contenedordesubadentro h3 {
+    color: #555555; /* Color más oscuro */
+    margin-bottom: 8px;
+    font-size: 1em; /* Título de campo más visible */
+    font-weight: 500;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.Contenedordesubadentro input {
+    width: 100%;
+    padding: 15px; /* Más padding para más clicabilidad */
+    margin-bottom: 20px;
+    border: 2px solid #dddddd; /* Borde un poco más grueso */
+    border-radius: 10px; /* Bordes más redondeados */
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    animation: inputSlide 0.5s ease-out;
+}
+
+@keyframes inputSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.Contenedordesubadentro input:focus {
+    outline: none;
+    border-color: #7d3cff;
+    box-shadow: 0 0 0 4px rgba(125, 60, 255, 0.4); /* Sombra de foco más intensa */
+    transform: translateY(-2px);
+}
+
+.ContenedorSiguiente {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    gap: 20px; /* Más espacio entre botones */
+    margin-top: 10px;
+}
+
+.ContenedorSiguiente button {
+    flex-grow: 1;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ContenedorSiguiente button:hover {
+    transform: translateY(-5px);
+}
+
+/* Efecto de "presionar" para todos los botones */
+.ContenedorSiguiente button:active {
+    transform: translateY(0) scale(0.97); /* Ligeramente más pequeño al presionar */
+    transition: transform 0.1s ease;
+    box-shadow: none !important; 
+}
+
+
+.ContenedorSiguiente a {
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    padding: 15px 0; /* Más padding vertical */
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: 600; /* Más audaz */
+    font-size: 1.05rem;
+    width: 100%;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de brillo al pasar el ratón por los enlaces */
+.ContenedorSiguiente a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); /* Más visible */
+    transition: left 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Transición más fluida */
+}
+
+.ContenedorSiguiente a:hover::before {
+    left: 100%;
+}
+
+.ContenedorSiguiente button:first-child a {
+    background-color: #7d3cff;
+    color: #fff;
+}
+
+.ContenedorSiguiente button:first-child a:hover {
+    background-color: #5a1fb5;
+    box-shadow: 0 8px 18px rgba(125, 60, 255, 0.5); /* Sombra más pronunciada al pasar el ratón */
+}
+
+.ContenedorSiguiente button:last-child a {
+    background-color: #e0e0e0;
+    color: #444;
+}
+
+.ContenedorSiguiente button:last-child a:hover {
+    background-color: #cccccc; /* Un gris más oscuro */
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de partículas flotantes (solo estilo base) */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+/* Partícula con efecto de brillo y movimiento */
+.particle {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 5px #7d3cff, 0 0 10px #ff00ff; /* Efecto de brillo de neón */
+    animation: floatParticle linear infinite, particleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes floatParticle {
+    from {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0.1;
+    }
+    to {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0.8;
+    }
+}
+
+@keyframes particleGlow {
+    from {
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+
+/* Media Queries - Mejoras para Responsividad */
+@media (max-width: 768px) {
+    .Contenedordeadentro {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .Contenedordeadentro img {
+        width: 80%;
+        max-width: 250px;
+    }
+    .Contenedor {
+        padding: 30px 20px;
+    }
+    .Contenedordesubadentro h1 {
+        font-size: 1.6em;
+    }
+}
+
+@media (max-width: 450px) {
+    .ContenedorSiguiente {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .ContenedorSiguiente button {
+        margin-bottom: 0;
+    }
+}
+
+.ContenedorSiguiente {
+    margin-top: 20px;
+}
+
+.ContenedorSiguiente button {
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    width: 100%;
+    max-width: 300px; 
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.ContenedorSiguiente button a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    display: block;
+}
+
+.ContenedorSiguiente button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

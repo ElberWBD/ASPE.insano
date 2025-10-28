@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Métricas y Reportes</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/metricas.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- 📊 BARRA LATERAL -->
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
+    <div class="spacer"></div>
+    <a href="static/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+
+  <!-- 🧩 CONTENIDO PRINCIPAL -->
+  <div class="content">
+    <h1>Panel de Métricas</h1>
+
+    <div class="main-split">
+
+      <!-- 🔹 MITAD SUPERIOR -->
+      <div class="top-half">
+        <div class="top-section">
+          <div class="left-section">
+            <div class="edit-form">
+              <h2>Resumen de Rendimiento</h2>
+              <div class="form-grid">
+                <div class="form-row"><label>Campañas activas:</label><input type="text" value="38" readonly></div>
+                <div class="form-row"><label>Campañas finalizadas:</label><input type="text" value="12" readonly></div>
+                <div class="form-row"><label>Clientes registrados:</label><input type="text" value="95" readonly></div>
+                <div class="form-row"><label>Ingresos totales:</label><input type="text" value="$12,480" readonly></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="right-section">
+            <div class="insight-panel">
+              <h3>Rendimiento General</h3>
+              <div class="circle-chart">
+                <div class="inner-circle"><span>82%</span></div>
+              </div>
+              <p class="chart-label">Eficiencia global de campañas</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🧮 FILTROS ENTRE SECCIONES -->
+      <div class="filter-card">
+        <h2>Filtros</h2>
+        <form class="filter-form">
+          <div class="form-group">
+            <label for="idPago">ID Pago:</label>
+            <input type="text" id="idPago" placeholder="Ej: P001">
+          </div>
+          <div class="form-group">
+            <label for="idCliente">ID Cliente:</label>
+            <input type="text" id="idCliente" placeholder="Ej: CL002">
+          </div>
+          <div class="form-group">
+            <label for="fecha">Fecha específica:</label>
+            <input type="date" id="fecha">
+          </div>
+          <div class="form-group">
+            <label for="mes">Mes:</label>
+            <select id="mes">
+              <option value="">Seleccionar</option>
+              <option>Enero</option><option>Febrero</option><option>Marzo</option>
+              <option>Abril</option><option>Mayo</option><option>Junio</option>
+              <option>Julio</option><option>Agosto</option><option>Septiembre</option>
+              <option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="año">Año:</label>
+            <input type="number" id="año" min="2020" max="2030" placeholder="2025">
+          </div>
+          <button type="submit" class="btn-filtrar"><i class="fa-solid fa-filter"></i> Aplicar Filtro</button>
+        </form>
+      </div>
+
+
+      <!-- 🔹 MITAD INFERIOR -->
+      <div class="bottom-half">
+        <div class="bottom-section">
+          <div class="left-section">
+            <div class="table-container">
+              <h2>Reportes</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID Campaña</th>
+                    <th>ID Cliente</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Método</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>P001</td>
+                    <td>CL001</td>
+                    <td>María Torres</td>
+                    <td>2025-10-14</td>
+                    <td>$580</td>
+                    <td>Tarjeta</td>
+                    <td>Completado</td>
+                    <td><button class="save"><i class="fa-solid fa-file-pdf"></i> PDF</button></td>
+                  </tr>
+                  <tr>
+                    <td>P002</td>
+                    <td>CL002</td>
+                    <td>Carlos Ramos</td>
+                    <td>2025-10-12</td>
+                    <td>$760</td>
+                    <td>Transferencia</td>
+                    <td>Completado</td>
+                    <td><button class="save"><i class="fa-solid fa-file-pdf"></i> PDF</button></td>
+                  </tr>
+                  <tr>
+                    <td>P003</td>
+                    <td>CL003</td>
+                    <td>Lucía Gutiérrez</td>
+                    <td>2025-10-10</td>
+                    <td>$420</td>
+                    <td>PayPal</td>
+                    <td>Pendiente</td>
+                    <td><button class="save"><i class="fa-solid fa-file-pdf"></i> PDF</button></td>
+                  </tr>
+                  <tr>
+                    <td>P004</td>
+                    <td>CL004</td>
+                    <td>Andrés Castillo</td>
+                    <td>2025-09-30</td>
+                    <td>$1,200</td>
+                    <td>Depósito</td>
+                    <td>Completado</td>
+                    <td><button class="save"><i class="fa-solid fa-file-pdf"></i> PDF</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
