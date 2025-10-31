@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Métricas y Reportes</title>
+  <!-- Reutiliza la hoja de estilos del dashboard de métricas existente -->
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/metricas.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- 📊 BARRA LATERAL -->
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
+    <div class="spacer"></div>
+    <a href="static/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+  <!-- 🧩 CONTENIDO PRINCIPAL -->
+  <div class="content">
+    <h1>Panel de Métricas</h1>
+    <div class="main-split">
+
+      <!-- 🔹 MITAD SUPERIOR -->
+      <div class="top-half">
+        <div class="top-section">
+          <div class="left-section">
+            <div class="edit-form">
+              <h2>Resumen de Rendimiento</h2>
+              <div class="form-grid">
+                <div class="form-row"><label>Campañas activas:</label><input type="text" id="campanas-activas" value="0" readonly></div>
+                <div class="form-row"><label>Campañas finalizadas:</label><input type="text" id="campanas-finalizadas" value="0" readonly></div>
+                <div class="form-row"><label>Clientes registrados:</label><input type="text" id="clientes-registrados" value="0" readonly></div>
+                <div class="form-row"><label>Ingresos totales:</label><input type="text" id="ingresos-totales" value="$0" readonly></div>
+              </div>
+            </div>
+          </div>
+          <div class="right-section">
+            <div class="insight-panel">
+              <h3>Rendimiento General</h3>
+              <div class="circle-chart">
+                <div class="inner-circle"><span id="porcentaje-eficiencia">0%</span></div>
+              </div>
+              <p class="chart-label">Eficiencia global de campañas</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🧮 FILTROS ENTRE SECCIONES -->
+      <div class="filter-card">
+        <h2>Filtros</h2>
+        <form class="filter-form">
+          <div class="form-group">
+            <label for="idPago">ID Campaña:</label>
+            <input type="text" id="idPago" placeholder="Ej: 1">
+          </div>
+          <div class="form-group">
+            <label for="idCliente">ID Cliente:</label>
+            <input type="text" id="idCliente" placeholder="Ej: 2">
+          </div>
+          <div class="form-group">
+            <label for="fecha">Fecha específica:</label>
+            <input type="date" id="fecha">
+          </div>
+          <div class="form-group">
+            <label for="mes">Mes:</label>
+            <select id="mes">
+              <option value="">Seleccionar</option>
+              <option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option>
+              <option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option>
+              <option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option>
+              <option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="año">Año:</label>
+            <input type="number" id="año" min="2020" max="2030" placeholder="2025">
+          </div>
+          <button type="submit" class="btn-filtrar"><i class="fa-solid fa-filter"></i> Aplicar Filtro</button>
+        </form>
+      </div>
+
+      <!-- 🔹 MITAD INFERIOR -->
+      <div class="bottom-half">
+        <div class="bottom-section">
+          <div class="left-section">
+            <div class="table-container">
+              <h2>Reportes</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID Campaña</th>
+                    <th>ID Cliente</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Método</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-reportes">
+                  <!-- Las filas se insertarán dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Script para cargar métricas, reportes y aplicar filtros -->
+  <script>
+    let reportesData = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarMetricas();
+      cargarReportes();
+      document.querySelector('.filter-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        aplicarFiltros();
+      });
+    });
+
+    async function cargarMetricas() {
+      try {
+        const [resCamp, resCli] = await Promise.all([
+          fetch('http://localhost:8080/api/campanias'),
+          fetch('http://localhost:8080/clientes/listar')
+        ]);
+        const campanias = await resCamp.json();
+        const clientes  = await resCli.json();
+        let activas = 0;
+        let finalizadas = 0;
+        let totalPresupuesto = 0;
+        campanias.forEach(c => {
+          const estado = (c.estado || '').toLowerCase();
+          if (estado.includes('finalizada')) finalizadas++;
+          else if (estado.includes('activa') || estado.includes('asignada') || estado.includes('progreso')) activas++;
+          if (c.presupuesto) totalPresupuesto += Number(c.presupuesto);
+        });
+        document.getElementById('campanas-activas').value = activas;
+        document.getElementById('campanas-finalizadas').value = finalizadas;
+        document.getElementById('clientes-registrados').value = clientes.length;
+        document.getElementById('ingresos-totales').value = '$' + totalPresupuesto.toFixed(2);
+        const porcentaje = campanias.length ? Math.round((activas / campanias.length) * 100) : 0;
+        document.getElementById('porcentaje-eficiencia').textContent = porcentaje + '%';
+      } catch (error) {
+        console.error('Error al cargar métricas', error);
+      }
+    }
+
+    async function cargarReportes() {
+      try {
+        const resRep = await fetch('http://localhost:8080/api/reportes');
+        const reportes = await resRep.json();
+        const [resCamp, resCli] = await Promise.all([
+          fetch('http://localhost:8080/api/campanias'),
+          fetch('http://localhost:8080/clientes/listar')
+        ]);
+        const campanias = await resCamp.json();
+        const clientes  = await resCli.json();
+        const mapCampania = {};
+        campanias.forEach(c => {
+          // support keys id, proyectoId, campaniaId etc.
+          const key = c.proyectoId || c.id || c.idCampania || c.campaniaId;
+          mapCampania[key] = c;
+        });
+        const mapCliente = {};
+        clientes.forEach(cl => {
+          mapCliente[cl.id] = cl;
+        });
+        reportesData = reportes.map(r => {
+          const campaniaId = r.campania_id || r.campaniaId || r.idCampania || r.proyectoId || r.idCampana;
+          const camp = mapCampania[campaniaId] || {};
+          const clienteId = camp.idCliente || camp.cliente_id || camp.id_clientes || camp.clienteId;
+          const cliente = mapCliente[clienteId] || {};
+          const fecha = r.generadoAt ? r.generadoAt.split('T')[0] : (camp.fechaInicio ? camp.fechaInicio.split('T')[0] : '');
+          return {
+            idCampana: campaniaId || '-',
+            idCliente: cliente.id || '-',
+            clienteNombre: ((cliente.nombre || '') + ' ' + (cliente.apellido || '')).trim() || '-',
+            fecha: fecha,
+            monto: camp.presupuesto || '-',
+            metodo: r.tipo || '-',
+            estado: camp.estado || '-',
+            report: r
+          };
+        });
+        mostrarReportes(reportesData);
+      } catch (error) {
+        console.error('Error al cargar reportes', error);
+      }
+    }
+
+    function mostrarReportes(data) {
+      const tbody = document.getElementById('tabla-reportes');
+      tbody.innerHTML = '';
+      data.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.idCampana}</td>
+          <td>${item.idCliente}</td>
+          <td>${item.clienteNombre}</td>
+          <td>${item.fecha}</td>
+          <td>$${item.monto}</td>
+          <td>${item.metodo}</td>
+          <td>${item.estado}</td>
+          <td><button class="save" data-id="${item.idCampana}"><i class="fa-solid fa-file-pdf"></i> PDF</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      // Agrega eventos para los botones PDF
+      document.querySelectorAll('button.save').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idCampana = e.currentTarget.getAttribute('data-id');
+          // Abre el PDF generado por el servidor. Se usa el endpoint existente
+          window.open('/generar-boleta', '_blank');
+        });
+      });
+    }
+
+    function aplicarFiltros() {
+      const idPago    = document.getElementById('idPago').value.trim().toLowerCase();
+      const idCliente = document.getElementById('idCliente').value.trim().toLowerCase();
+      const fecha     = document.getElementById('fecha').value;
+      const mes       = document.getElementById('mes').value.toLowerCase();
+      const anio      = document.getElementById('año').value;
+      const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      const filtered = reportesData.filter(item => {
+        let match = true;
+        if (idPago) {
+          match = match && String(item.idCampana).toLowerCase().includes(idPago);
+        }
+        if (idCliente) {
+          match = match && String(item.idCliente).toLowerCase().includes(idCliente);
+        }
+        if (fecha) {
+          match = match && (item.fecha === fecha);
+        }
+        if (mes) {
+          if (item.fecha) {
+            const dateObj = new Date(item.fecha);
+            const itemMes = monthNames[dateObj.getMonth()];
+            match = match && (itemMes === mes);
+          } else {
+            match = false;
+          }
+        }
+        if (anio) {
+          match = match && (item.fecha.startsWith(anio));
+        }
+        return match;
+      });
+      mostrarReportes(filtered);
+    }
+  </script>
+
+</body>
+</html>

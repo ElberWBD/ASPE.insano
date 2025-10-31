@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Trabajador</title>
+    <link rel="stylesheet" href="CSS/styles.css">
+    <style>
+      /* Estilos específicos del panel del trabajador */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .header {
+        background-color: #242424;
+        color: #fff;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 20px;
+      }
+      .header .actions {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      .header .actions span {
+        font-weight: bold;
+      }
+      .header .actions a, .header .actions button {
+        background-color: #60ee99cb;
+        color: #fff;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 30px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .header .actions a:hover, .header .actions button:hover {
+        background-color: #58d28c;
+      }
+      .sidebar {
+        background-color: #2f2f2f;
+        color: #fff;
+        width: 220px;
+        height: calc(100vh - 60px);
+        float: left;
+        padding-top: 20px;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+      }
+      .sidebar li {
+        padding: 12px 20px;
+        cursor: pointer;
+      }
+      .sidebar li:hover, .sidebar li.active {
+        background-color: #414141;
+      }
+      .main-content {
+        margin-left: 220px;
+        padding: 20px;
+      }
+      .section {
+        display: none;
+      }
+      .section.active {
+        display: block;
+      }
+      /* Dashboard metrics */
+      .metrics {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      .metric-card {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        flex: 1;
+        text-align: center;
+      }
+      .metric-card h3 {
+        margin: 0 0 10px;
+      }
+      /* Campañas listas */
+      .campana-lista {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .campana-card {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        width: calc(33% - 10px);
+        cursor: pointer;
+      }
+      .campana-card h4 {
+        margin: 0 0 8px;
+      }
+      .campana-card p {
+        margin: 4px 0;
+      }
+      .detalle-campana {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-top: 20px;
+      }
+      .detalle-campana h3 {
+        margin-top: 0;
+      }
+      .comentarios {
+        margin-top: 15px;
+      }
+      .comentario {
+        margin-bottom: 10px;
+        background-color: #f1f1f1;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .comentario strong {
+        display: block;
+      }
+    </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Portal del Trabajador</h1>
+    <div class="actions">
+      <span id="welcomeTrabajador"></span>
+      <button onclick="cerrarSesionTrabajador()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <ul>
+      <li class="active" onclick="mostrarSeccion('inicio', this)">Inicio</li>
+      <li onclick="mostrarSeccion('perfil', this)">Perfil</li>
+      <li onclick="mostrarSeccion('campanas', this)">Campañas</li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <!-- INICIO / DASHBOARD -->
+    <div id="inicio" class="section active">
+      <h2>Resumen de Campañas</h2>
+      <div class="metrics">
+        <div class="metric-card">
+          <h3 id="metricAsignadas">0</h3>
+          <p>Asignadas</p>
+        </div>
+        <div class="metric-card">
+          <h3 id="metricEnProceso">0</h3>
+          <p>En proceso</p>
+        </div>
+        <div class="metric-card">
+          <h3 id="metricFinalizadas">0</h3>
+          <p>Finalizadas</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERFIL -->
+    <div id="perfil" class="section">
+      <h2>Tu perfil</h2>
+      <form id="formPerfil" onsubmit="actualizarPerfil(event)">
+        <div>
+          <label>Nombre:</label>
+          <input type="text" id="nombreTrabajador" required>
+        </div>
+        <div>
+          <label>Email:</label>
+          <input type="email" id="emailTrabajador" required>
+        </div>
+        <div>
+          <label>Profesión:</label>
+          <input type="text" id="profesionTrabajador" disabled>
+        </div>
+        <div>
+          <label>Contraseña:</label>
+          <input type="password" id="passwordTrabajador" required>
+        </div>
+        <button type="submit">Guardar cambios</button>
+      </form>
+    </div>
+
+    <!-- CAMPANAS -->
+    <div id="campanas" class="section">
+      <h2>Tus Campañas</h2>
+      <div>
+        <button onclick="cargarCampanas('ASIGNADA')">Asignadas</button>
+        <button onclick="cargarCampanas('EN PROCESO')">En proceso</button>
+        <button onclick="cargarCampanas('FINALIZADA')">Finalizadas</button>
+      </div>
+      <div id="listaCampanas" class="campana-lista"></div>
+      <div id="detallesCampana" class="detalle-campana" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script>
+    // Variables globales
+    let trabajadorId = null;
+    let trabajadorNombre = null;
+
+    // Inicializar al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      trabajadorId = sessionStorage.getItem('trabajadorId');
+      trabajadorNombre = sessionStorage.getItem('trabajadorNombre');
+      const profesion = sessionStorage.getItem('trabajadorProfesion');
+      if (!trabajadorId) {
+        alert('Debe iniciar sesión primero');
+        window.location.href = 'LoginTrabajador.html';
+        return;
+      }
+      document.getElementById('welcomeTrabajador').textContent = `Bienvenido, ${trabajadorNombre}`;
+      // Cargar métricas y perfil
+      cargarMetricaCampanas();
+      cargarPerfil();
+      cargarCampanas('ASIGNADA');
+    });
+
+    // Navegación lateral
+    function mostrarSeccion(id, li) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.sidebar li').forEach(item => item.classList.remove('active'));
+      if (li) li.classList.add('active');
+    }
+
+    // Cerrar sesión del trabajador
+    function cerrarSesionTrabajador() {
+      sessionStorage.removeItem('trabajadorId');
+      sessionStorage.removeItem('trabajadorNombre');
+      sessionStorage.removeItem('trabajadorProfesion');
+      window.location.href = 'LoginTrabajador.html';
+    }
+
+    // Cargar métricas de campañas
+    async function cargarMetricaCampanas() {
+      try {
+        const res = await fetch(`http://localhost:8080/api/campanias/usuario/${trabajadorId}`);
+        if (!res.ok) throw new Error('Error al obtener campañas');
+        const campanas = await res.json();
+        let asignadas = 0, enProceso = 0, finalizadas = 0;
+        campanas.forEach(c => {
+          const estado = (c.estado || '').toUpperCase();
+          if (estado.includes('FINALIZ')) finalizadas++;
+          else if (estado.includes('PROCES') || estado.includes('EN PROCESO')) enProceso++;
+          else asignadas++;
+        });
+        document.getElementById('metricAsignadas').textContent = asignadas;
+        document.getElementById('metricEnProceso').textContent = enProceso;
+        document.getElementById('metricFinalizadas').textContent = finalizadas;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Cargar perfil del trabajador
+    async function cargarPerfil() {
+      try {
+        const res = await fetch(`http://localhost:8080/usuarios/${trabajadorId}`);
+        if (!res.ok) throw new Error('No se pudo cargar el perfil');
+        const trabajador = await res.json();
+        document.getElementById('nombreTrabajador').value = trabajador.username || '';
+        document.getElementById('emailTrabajador').value = trabajador.email || '';
+        document.getElementById('profesionTrabajador').value = trabajador.profesion || '';
+        document.getElementById('passwordTrabajador').value = trabajador.password_hash || '';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Actualizar perfil del trabajador
+    async function actualizarPerfil(event) {
+      event.preventDefault();
+      const nombre = document.getElementById('nombreTrabajador').value;
+      const email = document.getElementById('emailTrabajador').value;
+      const password = document.getElementById('passwordTrabajador').value;
+      try {
+        const res = await fetch(`http://localhost:8080/usuarios/guardar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            usuario_id: trabajadorId,
+            username: nombre,
+            email: email,
+            password_hash: password,
+            active: true,
+            profesion: sessionStorage.getItem('trabajadorProfesion')
+          })
+        });
+        if (res.ok) {
+          alert('Perfil actualizado correctamente');
+        } else {
+          alert('Error al actualizar el perfil');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error de conexión');
+      }
+    }
+
+    // Cargar campañas según estado
+    async function cargarCampanas(estadoFiltro) {
+      try {
+        const res = await fetch(`http://localhost:8080/api/campanias/usuario/${trabajadorId}`);
+        if (!res.ok) throw new Error('No se pudo cargar las campañas');
+        const campanas = await res.json();
+        const filtradas = campanas.filter(c => {
+          const estado = (c.estado || '').toUpperCase();
+          if (estadoFiltro === 'FINALIZADA') {
+            return estado.includes('FINALIZ');
+          } else if (estadoFiltro === 'EN PROCESO') {
+            return estado.includes('PROCES') || estado.includes('EN PROCESO');
+          } else {
+            // Asignadas (default)
+            return !estado || (!estado.includes('FINALIZ') && !estado.includes('PROCES'));
+          }
+        });
+        pintarCampanas(filtradas);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Mostrar campañas en tarjetas
+    function pintarCampanas(campanas) {
+      const contenedor = document.getElementById('listaCampanas');
+      contenedor.innerHTML = '';
+      if (!campanas.length) {
+        contenedor.innerHTML = '<p>No hay campañas en esta categoría.</p>';
+        return;
+      }
+      campanas.forEach(camp => {
+        const card = document.createElement('div');
+        card.className = 'campana-card';
+        card.innerHTML = `
+          <h4>${camp.nombre}</h4>
+          <p><strong>Estado:</strong> ${camp.estado ?? 'Pendiente'}</p>
+          <p><strong>Cliente ID:</strong> ${camp.idCliente}</p>
+        `;
+        card.onclick = () => mostrarDetalles(camp);
+        contenedor.appendChild(card);
+      });
+    }
+
+    // Mostrar detalles de una campaña y comentarios
+    async function mostrarDetalles(camp) {
+      const detalle = document.getElementById('detallesCampana');
+      detalle.style.display = 'block';
+      detalle.innerHTML = `
+        <h3>${camp.nombre}</h3>
+        <p><strong>Descripción:</strong> ${camp.descripcion || ''}</p>
+        <p><strong>Fecha inicio:</strong> ${camp.fechaInicio || ''}</p>
+        <p><strong>Fecha fin:</strong> ${camp.fechaFin || ''}</p>
+        <p><strong>Presupuesto:</strong> $${camp.presupuesto || 0}</p>
+        <p><strong>Estado actual:</strong> ${camp.estado || 'Pendiente'}</p>
+        <label for="estadoSelect">Cambiar estado:</label>
+        <select id="estadoSelect" onchange="actualizarEstadoCampana(${camp.idCampania})">
+          <option value="ASIGNADA" ${!camp.estado || camp.estado.toUpperCase().includes('ASIGNADA') || camp.estado.toUpperCase().includes('PENDIENTE') ? 'selected' : ''}>Asignada/Pendiente</option>
+          <option value="EN PROCESO" ${camp.estado && camp.estado.toUpperCase().includes('PROCES') ? 'selected' : ''}>En proceso</option>
+          <option value="FINALIZADA" ${camp.estado && camp.estado.toUpperCase().includes('FINALIZ') ? 'selected' : ''}>Finalizada</option>
+        </select>
+        <h4>Comentarios</h4>
+        <div id="listaComentarios"></div>
+        <form id="formComentario" onsubmit="enviarComentario(event, ${camp.idCampania})">
+          <textarea id="mensajeComentario" placeholder="Escribe un mensaje..." required></textarea>
+          <input type="file" id="archivoComentario" multiple>
+          <button type="submit">Enviar</button>
+        </form>
+      `;
+      // Cargar comentarios
+      cargarComentarios(camp.idCampania);
+    }
+
+    // Cargar comentarios de una campaña
+    async function cargarComentarios(idCampania) {
+      try {
+        const res = await fetch(`http://localhost:8080/api/campanias/${idCampania}/comentarios`);
+        if (!res.ok) throw new Error('No se pudieron cargar los comentarios');
+        const comentarios = await res.json();
+        const cont = document.getElementById('listaComentarios');
+        cont.innerHTML = '';
+        comentarios.forEach(c => {
+          const div = document.createElement('div');
+          div.className = 'comentario';
+          div.innerHTML = `
+            <strong>Autor ID: ${c.autorId}</strong>
+            <p>${c.mensaje}</p>
+            ${c.archivoBase64 ? `<a href="${c.archivoBase64}" download="archivo">Descargar adjunto</a>` : ''}
+            <small>${c.fecha}</small>
+          `;
+          cont.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Convertir archivos a base64
+    function convertirArchivos(files) {
+      const promesas = [];
+      for (const file of files) {
+        promesas.push(new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        }));
+      }
+      return Promise.all(promesas);
+    }
+
+    // Enviar comentario
+    async function enviarComentario(event, idCampania) {
+      event.preventDefault();
+      const mensaje = document.getElementById('mensajeComentario').value;
+      const files = document.getElementById('archivoComentario').files;
+      let archivosBase64 = [];
+      if (files.length > 0) {
+        archivosBase64 = await convertirArchivos(files);
+      }
+      const cuerpo = {
+        autorId: trabajadorId,
+        mensaje,
+        archivoBase64: archivosBase64.length ? archivosBase64[0] : null
+      };
+      try {
+        const res = await fetch(`http://localhost:8080/api/campanias/${idCampania}/comentarios`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cuerpo)
+        });
+        if (res.ok) {
+          document.getElementById('mensajeComentario').value = '';
+          document.getElementById('archivoComentario').value = '';
+          cargarComentarios(idCampania);
+        } else {
+          alert('No se pudo enviar el comentario');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Actualizar estado de una campaña
+    async function actualizarEstadoCampana(idCampania) {
+      const select = document.getElementById('estadoSelect');
+      const nuevoEstado = select.value;
+      try {
+        const res = await fetch(`http://localhost:8080/api/campanias/${idCampania}/estado`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estado: nuevoEstado })
+        });
+        if (res.ok) {
+          alert('Estado actualizado');
+          cargarMetricaCampanas();
+          cargarCampanas(nuevoEstado);
+        } else {
+          alert('No se pudo actualizar el estado');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
