@@ -3,65 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../CSS/InicioSesion(A).css" rel="Stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../static/CSS/Login-estilos/main.css">
-    <title>Inicio Sesion del Usuario</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Inter:wght@300;400;600;700&display=swap' rel='stylesheet'>
+    <title>Acceso y Registro As.Pe.</title>
 </head>
 <body>
-    <div class="Contenedor">
-        <img class="Logotipo" src="../static/IMG/02.jpg" alt="Logotipo">
-            <div class="Contenedordeadentro">
-                <img src="../static/IMG/Gato.webp" alt="Imagen">
-                 <div class="Contenedordesubadentro">
-                       <h1>BIENVENIDO USUARIO</h1>
-                        <h3>Correo Electronico:</h3>
-                        <input type="text" placeholder="Ingresar Correo Electronico">
-                        <h3>Contraseña:</h3>
-                        <input type="text" placeholder="Ingresar Contraseña">
-                 </div>
-            </div>
-            <div class="ContenedorSiguiente">
-                <button>
-                     <a href="../static/Index.html">Iniciar Sesion</a>
-                </button>
-                <button>
-                      <a href="../static/Register.html">Registrarse</a>
-                </button>
-            </div>
+    <div class="contenido">
+        <div class="curved-shape"></div>
+        <div class="curved-shape2"></div>
+        
+        <div class="form-box Login">
+            <h2 class="animation" style="--D:0; --S:21">
+            <img src="../static/IMG/02.jpg" alt="Logo As.Pe." class="title-logo"> As.Pe
+            </h2>
+            <form action="#" id="loginForm">
+                <div class="input-box animation" style="--D:1; --S:22">
+                    <input type="text" id="email_login" required>
+                    <label>Correo Electronico</label>
+                    <i class='bx bx-user'></i> 
+                </div>
+                <div class="input-box animation" style="--D:2; --S:23">
+                    <input type="password"  id="email_login" required>
+                    <label>Contraseña</label>
+                    <i class='bx bx-lock'></i> 
+                </div>
+                <div class="input-box animation" style="--D:3; --S:24">
+                    <button class="btn" type="submit">Iniciar Sesion</button>
+                </div>
+                <div class="regi-link animation" style="--D:4; --S:25">
+                    <p>¿No tienes cuenta? <a href="#" class="SignUpLink">Crear Cuenta</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="info-content Login">
+            <h2 class="animation" style="--D:0; --S:20">¡Bienvenido!</h2>
+            <p class="animation" style="--D:1; --S:21">
+                Inicia sesión para acceder a tu panel.
+            </p>
+        </div>
+
+        <div class="form-box Register">
+            <h2 class="animation" style="--li:17; --S:0">
+                Registrarse
+            </h2>
+            <form action="#" id="registerForm">
+                <div class="input-box animation" style="--li:18; --S:1">
+                    <input type="text" id="email_register" required>
+                    <label>Correo Electronico</label>
+                    <i class='bx bx-user'></i> 
+                </div>
+                <div class="input-box animation" style="--li:19; --S:2">
+                    <input type="password"  id="password_register"required>
+                    <label>Contraseña</label>
+                    <i class='bx bx-lock'></i> 
+                </div>
+                <div class="input-box animation" style="--li:20; --S:3">
+                    <button class="btn" type="submit">Registrarse</button>
+                </div>
+                <div class="regi-link animation" style="--li:21; --S:4">
+                    <p>¿Ya tienes cuenta? <a href="#" class="SignInLink">Iniciar Sesión</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="info-content Register">
+            <h2 class="animation" style="--li:17; --S:0">¡Únete al equipo!</h2>
+            <p class="animation" style="--li:18; --S:1">
+                Regístrate para obtener acceso completo a nuestras herramientas y beneficios.
+            </p>
+        </div>
     </div>
+    <script src="../static/JS/Script8.js"></script>
 </body>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const loginButton = document.querySelector('.ContenedorSiguiente button:nth-child(1)');
-    const loginLink = loginButton.querySelector('a');
-    const emailInput = document.querySelector('input[placeholder="Ingresar Correo Electronico"]');
-    const passwordInput = document.querySelector('input[placeholder="Ingresar Contraseña"]');
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-    loginButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        const email = emailInput.value.trim();
-        const password = passwordInput.value.trim();
-        if (email === '') {
-            alert('El campo de Correo Electrónico no puede estar vacío.');
-            emailInput.focus();
-            return;
-        } else if (!isValidEmail(email)) {
-            alert('Por favor, ingresa un Correo Electrónico con un formato válido (ej. usuario@dominio.com).');
-            emailInput.focus();
-            return;
-        }
-        if (password === '') {
-            alert('El campo de Contraseña no puede estar vacío.');
-            passwordInput.focus();
-            return;
-        }
-        alert(`Validación Correcta. Intentando iniciar sesión para: ${email}`);
-        window.location.href = loginLink.getAttribute('href');
-    });
-});
-</script>
 </html>
