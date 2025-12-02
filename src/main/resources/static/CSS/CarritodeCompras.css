@@ -1,0 +1,417 @@
+
+/* --- VARIABLES DE COLOR --- */
+:root {
+    --gray-header: rgba(128, 128, 128, 0.85);
+    --accent-green: #60ee99cb;
+    --accent-green-dark: #33a362;
+    --text-light: #ffffff;
+    --background-warm: white; /* Fondo cálido general */
+}
+
+/* --- ESTILOS BASE --- */
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    width: 100%;
+    background-color: var(--background-warm);
+    color: #333;
+}
+
+
+/* --- CONTENIDO PRINCIPAL Y GRID DE TARJETAS --- */
+.services-container {
+    max-width: 1200px;
+    margin: 120px auto 40px; 
+    padding: 0 20px;
+}
+
+.main-title {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 30px;
+}
+
+.product-card {
+    background-color: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-8px); 
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.icon-wrapper {
+    color: var(--accent-green);
+    font-size: 3em;
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
+}
+
+.product-card:hover .icon-wrapper {
+    color: var(--accent-green-dark);
+}
+
+.product-name {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.product-description {
+    color: #666;
+    margin-bottom: 15px;
+    min-height: 40px;
+}
+
+.product-price {
+    color: #1a1a1a;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+}
+
+.add-to-cart-btn {
+    background-color: var(--accent-green);
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 700;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.add-to-cart-btn:hover {
+    background-color: var(--accent-green-dark);
+    transform: scale(1.02);
+}
+
+/* --- SIDEBAR DEL CARRITO --- */
+.carrito-sidebar {
+    width: 380px;
+    height: 100%;
+    background-color: #ffffff;
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 30px 25px; 
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow-y: auto;
+    transform: translateX(100%); 
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+}
+
+.carrito-sidebar.open {
+    transform: translateX(0); 
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.sidebar-header h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #333;
+}
+
+.close-btn {
+    background: #eee;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1em;
+    cursor: pointer;
+    color: #666;
+    transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+    background-color: #ccc;
+}
+
+.cart-items {
+    list-style: none;
+    padding: 0;
+    min-height: 150px; 
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed #ddd;
+    font-size: 0.95em;
+}
+
+.empty-cart-message {
+    text-align: center;
+    padding: 40px 0;
+    color: #aaa;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.empty-cart-message i {
+    font-size: 3em;
+    color: #ddd;
+    margin-bottom: 15px;
+}
+
+/* --- Resumen y Totales --- */
+.cart-summary {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid #ccc;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: 400;
+}
+
+.summary-line.total {
+    font-weight: bold;
+    font-size: 1.3em;
+    color: #111;
+}
+
+/* --- Botón de Imprimir --- */
+.checkout-btn {
+    background-color: var(--accent-green);
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.checkout-btn:hover {
+    background-color: var(--accent-green-dark);
+}
+
+/* --- Botón Flotante para Abrir Carrito --- */
+.cart-float-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--accent-green);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5em;
+    cursor: pointer;
+    z-index: 990;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.cart-float-btn:hover {
+    transform: scale(1.1);
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 7px;
+    font-size: 0.7em;
+    font-weight: bold;
+}
+
+.whatsapp-float-btn {
+    bottom: 120px; /* más arriba que el carrito */
+    right: 30px;   /* misma posición a la derecha */
+    width: 60px;   /* ancho del botón */
+    height: 60px;  /* alto del botón */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.whatsapp-float-btn img {
+    width: 35px;   /* tamaño del icono */
+    height: 35px;  /* tamaño del icono */
+}
+
+/* ====================== */
+/* BOTÓN FLOTANTE DEL BOT */
+/* ====================== */
+
+/* Botón flotante */
+.bot-float-btn {
+    position: fixed;
+    bottom: 205px;
+    right: 30px;
+    background: #60ee99cb;
+    color: white;
+    border: none;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    font-size: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: 0.3s;
+    z-index: 9999;
+}
+
+.bot-float-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Ventana del bot */
+.chatbot-window {
+    position: fixed;
+    bottom: 200px;
+    right: 30px;
+    width: 320px;
+    height: 420px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 9999;
+    animation: slideUp 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Header */
+.chatbot-header {
+    background: #60ee99cb;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Body */
+.chatbot-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    font-size: 15px;
+}
+
+/* Footer dinámico */
+.chatbot-footer {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+/* Mensajes */
+.bot-msg, .user-msg {
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    max-width: 90%;
+}
+
+.bot-msg {
+    background: #e6ffe6;
+    align-self: flex-start;
+}
+
+.user-msg {
+    background: #d9eaff;
+    align-self: flex-end;
+    text-align: right;
+}
+
+/* Botones de opciones */
+.option-btn {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: none;
+    background: #60ee99cb;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.option-btn:hover {
+    background: #60ee99cb;
+}
+
+/* Input soporte */
+.support-input {
+    width: 94%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 8px;
+}
+
+.send-btn {
+    width: 100%;
+    padding: 8px;
+    background: #60ee99cb;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}

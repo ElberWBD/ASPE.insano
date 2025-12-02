@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/clientes.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/Dashcliente.html" class="active"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
+    <div class="spacer"></div>
+    <a href="Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+  <div class="content">
+    <h1>Clientes</h1>
+
+    <div class="filter-bar">
+      <input
+        type="text"
+        id="buscar_cliente"
+        placeholder="Buscar cliente por nombre, correo, empresa o ID..."
+      />
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Empresa</th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-clientes"></tbody>
+      </table>
+    </div>
+
+    <div class="detail-section" style="margin-top: 2rem;">
+      <h2>Detalle del cliente seleccionado</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>ID</label>
+          <input type="text" id="det_id" readonly />
+        </div>
+        <div class="form-row">
+          <label>Nombre</label>
+          <input type="text" id="det_nombre" readonly />
+        </div>
+        <div class="form-row">
+          <label>Correo</label>
+          <input type="text" id="det_correo" readonly />
+        </div>
+        <div class="form-row">
+          <label>Empresa</label>
+          <input type="text" id="det_empresa" readonly />
+        </div>
+        <div class="form-row">
+          <label>Teléfono</label>
+          <input type="text" id="det_telefono" readonly />
+        </div>
+        <div class="form-row">
+          <label>Estado</label>
+          <input type="text" id="det_estado" readonly />
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-panel" style="margin-top: 3rem;">
+      <h3>Clientes activos</h3>
+      <div class="circle-chart">
+        <div class="inner-circle"><span id="porcentaje-clientes-activos">0%</span></div>
+      </div>
+      <p class="chart-label">
+        Porcentaje de clientes activos respecto al total.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const API_CLIENTES = "http://localhost:8080/clientes/listar";
+    let clientesData = [];
+
+    function actualizarGraficoPorcentaje(spanId, porcentaje) {
+      const span = document.getElementById(spanId);
+      if (!span) return;
+      const chart = span.closest(".circle-chart");
+      if (!chart) return;
+      const valor = Math.max(0, Math.min(100, porcentaje));
+      span.textContent = valor + "%";
+      chart.style.setProperty("--percent", valor / 100);
+    }
+
+    async function cargarClientes() {
+      try {
+        const res = await fetch(API_CLIENTES);
+        if (!res.ok) throw new Error("Error al obtener clientes");
+        clientesData = await res.json();
+        mostrarClientes(clientesData);
+        actualizarEstadisticas();
+      } catch (err) {
+        console.error("Error cargando clientes:", err);
+      }
+    }
+
+    function mostrarClientes(lista) {
+      const tbody = document.getElementById("tabla-clientes");
+      tbody.innerHTML = "";
+      lista.forEach(cli => {
+        const id = cli.id ?? cli.idCliente ?? cli.id_cliente ?? "-";
+        const nombre = (cli.nombre ?? "") + " " + (cli.apellido ?? "");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${id}</td>
+          <td>${nombre}</td>
+          <td>${cli.email ?? cli.correo ?? "-"}</td>
+          <td>${cli.empresa ?? "-"}</td>
+          <td>${cli.telefono ?? "-"}</td>
+          <td>${cli.estado ?? (cli.activo ? "Activo" : "Inactivo")}</td>
+        `;
+        tr.addEventListener("click", () => mostrarDetalle(cli));
+        tbody.appendChild(tr);
+      });
+    }
+
+    function mostrarDetalle(c) {
+      const get = x => x ?? "";
+      const id = c.id ?? c.idCliente ?? c.id_cliente ?? "";
+      const nombre = (c.nombre ?? "") + " " + (c.apellido ?? "");
+      document.getElementById("det_id").value = id;
+      document.getElementById("det_nombre").value = nombre.trim();
+      document.getElementById("det_correo").value = get(c.email ?? c.correo);
+      document.getElementById("det_empresa").value = get(c.empresa);
+      document.getElementById("det_telefono").value = get(c.telefono);
+      document.getElementById("det_estado").value =
+        c.estado ?? (c.activo ? "Activo" : "Inactivo");
+    }
+
+    const buscarInput = document.getElementById("buscar_cliente");
+    buscarInput.addEventListener("input", () => {
+      const texto = buscarInput.value.trim().toLowerCase();
+      if (!texto) {
+        mostrarClientes(clientesData);
+        return;
+      }
+      const filtrados = clientesData.filter(c => {
+        const comp = `${c.id ?? c.idCliente ?? c.id_cliente ?? ""} `
+          + `${c.nombre ?? ""} ${c.apellido ?? ""} `
+          + `${c.email ?? c.correo ?? ""} `
+          + `${c.empresa ?? ""}`.toLowerCase();
+        return comp.includes(texto);
+      });
+      mostrarClientes(filtrados);
+    });
+
+    function actualizarEstadisticas() {
+      const total = clientesData.length;
+      const activos = clientesData.filter(c => {
+        if (typeof c.activo === "boolean") return c.activo;
+        return (c.estado || "").toLowerCase().includes("activo");
+      }).length;
+      const porcentaje = total ? Math.round((activos / total) * 100) : 0;
+      actualizarGraficoPorcentaje("porcentaje-clientes-activos", porcentaje);
+    }
+
+    window.addEventListener("DOMContentLoaded", cargarClientes);
+  </script>
+</body>
+</html>

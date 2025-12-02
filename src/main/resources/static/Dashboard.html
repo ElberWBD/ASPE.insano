@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/main2.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/Dashcliente.html"><i class="icon fa-solid fa-users"></i><span>Clientes</span></a>
+    <a href="/Dashcampaña.html"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <div class="spacer"></div>
+    <a href="static/Index.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+
+  </div>
+
+  <div class="content">
+    <h1>Bienvenido!!</h1>
+
+
+
+    <div class="cards">
+      <div class="card">
+        <i class="fa-solid fa-bullhorn"></i>
+        <div>
+          <h3>Campañas activas</h3>
+          <p id="campanas-activas-count">0</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <i class="fa-solid fa-credit-card"></i>
+        <div>
+          <h3>Pagos realizados</h3>
+          <p id="pagos-realizados">0</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <i class="fa-solid fa-users"></i>
+        <div>
+          <h3>Usuarios registrados</h3>
+          <p id="usuarios-registrados">0</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <i class="fa-solid fa-hourglass-half"></i>
+        <div>
+          <h3>Campañas pendientes</h3>
+          <p id="campanas-pendientes">0</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-section">
+
+      <div class="table-section">
+        <h2>Servicios recientes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Servicio</th>
+              <th>Descripción</th>
+              <th>Precio</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-servicios-recientes">
+          </tbody>
+        </table>
+      </div>
+
+
+      <div class="metrics">
+        <h2>Métricas de desempeño</h2>
+        <div class="circle">
+          <div class="inner-circle">
+            <span id="rendimiento-percentage">0%</span>
+          </div>
+        </div>
+        <p>Rendimiento general de campañas</p>
+      </div>
+    </div>
+
+        <div class="bottom-section second">
+
+            <div class="table-section">
+              <h2>Clientes recientes</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Teléfono</th>
+                    <th>Dirección</th>
+                    <th>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-clientes-recientes">
+                </tbody>
+              </table>
+            </div>
+      
+            <div class="metrics-table">
+              <h2>Tendencias de métricas</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Métrica</th>
+                    <th>Cambio</th>
+                    <th>Variación</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Campañas activas</td>
+                    <td class="up"><i class="fa-solid fa-arrow-up"></i> +12%</td>
+                    <td>Últimos 7 días</td>
+                  </tr>
+                  <tr>
+                    <td>Usuarios registrados</td>
+                    <td class="up"><i class="fa-solid fa-arrow-up"></i> +8%</td>
+                    <td>Última semana</td>
+                  </tr>
+                  <tr>
+                    <td>Pagos realizados</td>
+                    <td class="down"><i class="fa-solid fa-arrow-down"></i> -3%</td>
+                    <td>Este mes</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+      
+  </div>
+
+   <script>
+async function cargarDatosDashboard() {
+  try {
+    const [campRes, cliRes, userRes] = await Promise.all([
+      fetch('http://localhost:8080/api/campanias'),
+      fetch('http://localhost:8080/clientes/listar'),
+      fetch('http://localhost:8080/usuarios/listar')
+    ]);
+    const campanias = await campRes.json();
+    const clientes  = await cliRes.json();
+    const usuarios  = await userRes.json();
+
+    // Cálculos
+    const activas   = campanias.filter(c => (c.estado || '').toLowerCase().includes('activa') || (c.estado || '').toLowerCase().includes('asignada'));
+    const pendientes= campanias.filter(c => (c.estado || '').toLowerCase().includes('pendiente') || (c.estado || '').toLowerCase().includes('pausada'));
+    const totalPagos= campanias.reduce((acc,c) => acc + (c.presupuesto || 0), 0);
+
+    // Actualiza tarjetas
+    document.getElementById('campanas-activas-count').textContent = activas.length;
+    document.getElementById('pagos-realizados').textContent       = '$' + totalPagos.toFixed(2);
+    document.getElementById('usuarios-registrados').textContent   = usuarios.length;
+    document.getElementById('campanas-pendientes').textContent    = pendientes.length;
+
+    // Llena tabla de servicios (últimas 5 campañas)
+    const tbodyServ = document.getElementById('tabla-servicios-recientes');
+    tbodyServ.innerHTML = '';
+    campanias.slice(-5).reverse().forEach(c => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${c.nombre || '-'}</td>
+        <td>${c.descripcion || '-'}</td>
+        <td>$${c.presupuesto ?? '-'}</td>
+        <td>${c.estado || '-'}</td>
+        <td>${c.fechaInicio || '-'}</td>`;
+      tbodyServ.appendChild(tr);
+    });
+
+    // Llena tabla de clientes recientes (últimos 3)
+    const tbodyCli = document.getElementById('tabla-clientes-recientes');
+    tbodyCli.innerHTML = '';
+    clientes.slice(-3).reverse().forEach(cli => {
+      const fecha = cli.fechaCreacion ? new Date(cli.fechaCreacion).toLocaleDateString() : '-';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${cli.nombre}</td>
+        <td>${cli.apellido || ''}</td>
+        <td>${cli.telefono || ''}</td>
+        <td>${cli.direccion || ''}</td>
+        <td>${fecha}</td>`;
+      tbodyCli.appendChild(tr);
+    });
+
+    // Actualiza porcentaje de rendimiento general (activas / total)
+    const porcentaje = campanias.length ? Math.round((activas.length / campanias.length) * 100) : 0;
+    document.getElementById('rendimiento-percentage').textContent = porcentaje + '%';
+  } catch (err) {
+    console.error('Error cargando dashboard:', err);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', cargarDatosDashboard);
+</script>
+
+
+</body>
+</html>

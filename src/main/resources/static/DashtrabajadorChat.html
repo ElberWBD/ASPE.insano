@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel del Trabajador</title>
+
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/campaña.css" />
+  <link 
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <style>
+    /* ======= ESTILOS AGREGADOS ======= */
+
+    /* Botón mini "Chat" */
+    .mini-chat-btn {
+      padding: 4px 7px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      background: #4a7cff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    /* Panel de chat */
+    .chat-panel {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    .chat-box {
+      width: 100%;
+      height: 280px;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 1rem;
+      overflow-y: auto;
+      box-shadow: 0 0 6px rgba(0,0,0,.1);
+    }
+
+    .chat-msg {
+      background: #eef3ff;
+      padding: 0.6rem;
+      margin-bottom: 0.8rem;
+      border-radius: 8px;
+    }
+
+    .chat-msg strong {
+      color: #2c3e50;
+    }
+
+    .chat-input-container {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input-container input {
+      flex: 1;
+      padding: 0.7rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .btn-enviar {
+      padding: 0.7rem 1rem;
+      background: #4a7cff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .scroll-top-btn {
+      margin-top: .7rem;
+      background: #777;
+      color: white;
+      border: none;
+      padding: .5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===========================
+         BARRA LATERAL ORIGINAL
+  ============================== -->
+  <div class="sidebar">
+    <a href="/DashtrabajadorMetricas.html">
+      <i class="icon fa-solid fa-chart-line"></i><span>Métricas</span>
+    </a>
+    <a href="/Dashtrabajador.html" class="active">
+      <i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span>
+    </a>
+    <a href="/DashtrabajadorChat.html">
+      <i class="icon fa-solid fa-users"></i><span>Chat clientes</span>
+    </a>
+    <a href="/DashtrabajadorDatos.html">
+      <i class="icon fa-solid fa-user"></i><span>Mis datos</span>
+    </a>
+
+    <div class="spacer"></div>
+
+    <a href="#" onclick="cerrarSesion(); return false;">
+      <i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+    </a>
+  </div>
+
+  <!-- ===========================
+           CONTENIDO PRINCIPAL
+  ============================== -->
+  <div class="content">
+    <h1>Panel del Trabajador</h1>
+    <p id="bienvenida-trabajador" class="small-muted"></p>
+
+    <!-- FILTRO -->
+    <div class="filter-bar">
+      <input
+        type="text"
+        id="buscar_campania"
+        placeholder="Buscar campaña asignada por nombre, descripción, estado o ID..."
+      />
+    </div>
+
+    <!-- TABLA MODIFICADA -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Campaña</th>
+            <th>Usuario</th>
+            <th>Cliente</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Estado</th>
+            <th>Chat</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-campanias"></tbody>
+      </table>
+    </div>
+
+    <!-- DETALLE DE CAMPAÑA -->
+    <div class="detail-section" style="margin-top: 2rem;">
+      <h2>Detalle de la campaña seleccionada</h2>
+      <p class="small-muted">Seleccione una campaña de la tabla para ver su detalle.</p>
+
+      <div class="form-grid">
+        <div class="form-row"><label>ID Campaña</label><input type="text" id="detalle_id" readonly></div>
+        <div class="form-row"><label>Cliente</label><input type="text" id="detalle_cliente" readonly></div>
+        <div class="form-row"><label>Servicio</label><input type="text" id="detalle_nombre" readonly></div>
+        <div class="form-row"><label>Descripción</label><input type="text" id="detalle_descripcion" readonly></div>
+        <div class="form-row"><label>Fecha Inicio</label><input type="text" id="detalle_fecha_inicio" readonly></div>
+        <div class="form-row"><label>Fecha Fin</label><input type="text" id="detalle_fecha_fin" readonly></div>
+        <div class="form-row"><label>Presupuesto</label><input type="text" id="detalle_presupuesto" readonly></div>
+        <div class="form-row"><label>Estado</label><input type="text" id="detalle_estado" readonly></div>
+      </div>
+    </div>
+
+    <!-- PANEL DE CHAT -->
+    <div class="chat-panel" style="margin-top: 2rem;">
+      <h2>Chat de la campaña</h2>
+      <p class="small-muted">Seleccione "Chat" en la tabla para cargar la conversación.</p>
+
+      <!-- Caja de mensajes -->
+      <div id="chat-box" class="chat-box">
+        <!-- Mensajes aparecerán aquí -->
+      </div>
+
+      <!-- Botón subir -->
+      <button id="scroll-top-chat" class="scroll-top-btn">
+        <i class="fa-solid fa-arrow-up"></i> Subir
+      </button>
+
+      <!-- Input + enviar -->
+      <div class="chat-input-container">
+        <input type="text" id="mensaje_chat" placeholder="Escribe un mensaje..." />
+        <button id="btn_enviar_chat" class="btn-enviar">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===========================
+                SCRIPT
+  ============================== -->
+  <script>
+    const API_BASE = "http://localhost:8080";
+    const API_CAMPANIAS_USUARIO = API_BASE + "/api/campanias/usuario";
+
+    let usuarioActual = null;
+    let campaniasData = [];
+    let campaniaSeleccionadaChat = null;
+
+    function cerrarSesion() {
+      localStorage.removeItem("usuarioLogueado");
+      window.location.href = "LoginTrabajador.html";
+    }
+
+    function cargarUsuarioDesdeLocalStorage() {
+      const raw = localStorage.getItem("usuarioLogueado");
+      if (!raw) {
+        alert("Debe iniciar sesión primero");
+        window.location.href = "LoginTrabajador.html";
+        return;
+      }
+
+      const data = JSON.parse(raw);
+      usuarioActual = {
+        id: data.id ?? data.usuarioId ?? data.idUsuario,
+        username: data.username,
+        email: data.email
+      };
+
+      document.getElementById("bienvenida-trabajador").textContent =
+        `Sesión iniciada como: ${usuarioActual.username} (${usuarioActual.email})`;
+    }
+
+    async function cargarCampaniasAsignadas() {
+      const res = await fetch(`${API_CAMPANIAS_USUARIO}/${usuarioActual.id}`);
+      campaniasData = await res.json();
+
+      mostrarCampanias(campaniasData);
+    }
+
+    /* ============================
+          TABLA MODIFICADA
+    ============================ */
+    function mostrarCampanias(lista) {
+      const tbody = document.getElementById("tabla-campanias");
+      tbody.innerHTML = "";
+
+      lista.forEach(camp => {
+        const id = camp.id ?? camp.idCampania;
+
+        const usuarioAsignado = camp.usuario
+          ? (camp.usuario.username ?? camp.usuario.nombre ?? "Sin usuario")
+          : (camp.usuarioAsignado ?? "Sin usuario");
+
+        const clienteStr = camp.cliente
+          ? `ID: ${camp.cliente.id} - ${camp.cliente.nombre} ${camp.cliente.apellido}`
+          : "Sin cliente";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${id}</td>
+          <td>${usuarioAsignado}</td>
+          <td>${clienteStr}</td>
+          <td>${camp.nombre ?? "-"}</td>
+          <td>${camp.descripcion ?? "-"}</td>
+          <td>${camp.fechaInicio ?? "-"}</td>
+          <td>${camp.fechaFin ?? "-"}</td>
+          <td>${camp.estado ?? "-"}</td>
+          <td>
+            <button class="mini-chat-btn" onclick="verChat(${id}); event.stopPropagation();">
+              Chat
+            </button>
+          </td>
+        `;
+
+        tr.addEventListener("click", () => mostrarDetalle(camp));
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ============================
+        DETALLE CAMPANIA
+    ============================ */
+    function mostrarDetalle(c) {
+      document.getElementById("detalle_id").value = c.id ?? c.idCampania;
+      document.getElementById("detalle_cliente").value =
+        c.cliente ? `${c.cliente.nombre} ${c.cliente.apellido}` : "";
+      document.getElementById("detalle_nombre").value = c.nombre ?? "";
+      document.getElementById("detalle_descripcion").value = c.descripcion ?? "";
+      document.getElementById("detalle_fecha_inicio").value = c.fechaInicio ?? "";
+      document.getElementById("detalle_fecha_fin").value = c.fechaFin ?? "";
+      document.getElementById("detalle_presupuesto").value = c.presupuesto ?? "";
+      document.getElementById("detalle_estado").value = c.estado ?? "";
+    }
+
+    /* ============================
+          CARGAR CHAT
+    ============================ */
+    async function verChat(idCampania) {
+      campaniaSeleccionadaChat = idCampania;
+
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = `<p class="small-muted">Cargando mensajes...</p>`;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/chat/campania/${idCampania}`);
+        const mensajes = await res.json();
+
+        chatBox.innerHTML = "";
+
+        mensajes.forEach(msg => {
+          const div = document.createElement("div");
+          div.classList.add("chat-msg");
+
+          div.innerHTML = `
+            <strong>${msg.usuario ?? "Desconocido"}:</strong>
+            <p>${msg.texto}</p>
+            <small>${msg.fecha}</small>
+          `;
+
+          chatBox.appendChild(div);
+        });
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+      } catch (err) {
+        chatBox.innerHTML = `<p>Error cargando chat</p>`;
+      }
+    }
+
+ 
+    document.getElementById("btn_enviar_chat").addEventListener("click", enviarMensaje);
+
+    async function enviarMensaje() {
+      if (!campaniaSeleccionadaChat) {
+        alert("Seleccione un chat primero.");
+        return;
+      }
+
+      const input = document.getElementById("mensaje_chat");
+      const mensaje = input.value.trim();
+      if (!mensaje) return;
+
+      try {
+        await fetch(`${API_BASE}/api/chat/enviar`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idCampania: campaniaSeleccionadaChat,
+            mensaje: mensaje,
+            usuario: usuarioActual.username
+          })
+        });
+
+        input.value = "";
+        verChat(campaniaSeleccionadaChat);
+
+      } catch (err) {
+        alert("Error enviando mensaje");
+      }
+    }
+
+    document.getElementById("scroll-top-chat").addEventListener("click", () => {
+      document.getElementById("chat-box").scrollTop = 0;
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      cargarUsuarioDesdeLocalStorage();
+      cargarCampaniasAsignadas();
+    });
+  </script>
+
+</body>
+</html>

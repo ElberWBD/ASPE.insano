@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="login-image"></div>
+    <div class="login-form">
+      <h2>Ingrese sus datos</h2><br>
+
+      <!-- FORMULARIO DEL TRABAJADOR -->
+      <form id="loginForm">
+        <input id="email" type="email" placeholder="Correo electrónico" required>
+        <input id="password" type="password" placeholder="Contraseña" required>
+        
+        <div class="button-container">
+          <!-- le añadimos un id para poder deshabilitarlo desde JS -->
+          <button type="submit" class="btn-submit" id="btn-login">Iniciar sesión</button>
+        </div><br>
+
+        <div class="links">
+          <hr class="line-break">
+          <a href="../HTML/Index.html">Contactar con soporte</a>
+        </div>
+
+        <!-- este párrafo será el contenedor de mensajes de error -->
+        <p id="mensaje"></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_LOGIN = "http://localhost:8080/usuarios/login";
+
+    // Asociamos el submit del formulario a la función de login
+    const form = document.getElementById("loginForm");
+    form.addEventListener("submit", loginTrabajador);
+
+    async function loginTrabajador(event) {
+      event.preventDefault(); // evita que la página se recargue
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      const mensaje = document.getElementById("mensaje");
+      const btn = document.getElementById("btn-login");
+
+      // limpiar mensaje
+      mensaje.textContent = "";
+      mensaje.style.color = "red";
+
+      btn.disabled = true;
+      btn.textContent = "Verificando...";
+
+      try {
+        const res = await fetch(API_LOGIN, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(msg || "Credenciales incorrectas");
+        }
+
+        const data = await res.json();
+        console.log("Respuesta /usuarios/login:", data);
+
+        // Guardamos la sesión del usuario (trabajador) para que el Dashtrabajador pueda leerla
+        localStorage.setItem("usuarioLogueado", JSON.stringify(data));
+        console.log("Sesión guardada (usuarioLogueado):", data);
+
+        // (Opcional) pequeño mensaje de éxito
+        // mensaje.style.color = "green";
+        // mensaje.textContent = "Inicio de sesión exitoso, redirigiendo...";
+
+        // Redirigir al dashboard del trabajador
+        window.location.href = "Dashtrabajador.html";
+
+      } catch (err) {
+        console.error("Error en login:", err);
+        mensaje.textContent = "No se pudo iniciar sesión: " + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Iniciar sesión";
+      }
+    }
+  </script>
+
+</body>
+</html>
