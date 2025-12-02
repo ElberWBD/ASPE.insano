@@ -18,6 +18,8 @@
     <name>pagina de marketing pagemarketing</name>
     <description>proyecto de servicios en pagina web para la empresa ASPE</description>
 
+    <packaging>jar</packaging>
+
     <properties>
         <java.version>21</java.version>
     </properties>
@@ -86,7 +88,18 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- JSF + integración con Spring Boot -->
+        <dependency>
+            <groupId>org.joinfaces</groupId>
+            <artifactId>faces-spring-boot-starter</artifactId>
+            <version>5.3.0</version>
+        </dependency>
+
+
+
     </dependencies>
+    
 
     <build>
         <plugins>

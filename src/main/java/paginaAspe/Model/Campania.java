@@ -50,6 +50,15 @@ public class Campania {
         this.usuarioId = usuarioId;
     }
 
+    public Long getId() {
+    return idCampania;   // aquí pones el nombre REAL de tu campo
+}
+
+public void setId(Long id) {
+    this.idCampania = id; // idem, tu campo real
+}
+
+
     public Long getIdCampania() { return idCampania; }
     public void setIdCampania(Long idCampania) { this.idCampania = idCampania; }
 

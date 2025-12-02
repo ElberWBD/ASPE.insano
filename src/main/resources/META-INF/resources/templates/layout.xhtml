@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><ui:insert name="pageTitle">AS.pe - Panel</ui:insert></title>
+
+    <!-- Tu CSS principal de dashboard -->
+    <link rel="stylesheet" type="text/css"
+          href="#{request.contextPath}/CSS/Dashboard-estilos/clientes.css" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- jQuery para el filtro / efectos -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</h:head>
+
+<h:body>
+
+    <!-- Sidebar fija -->
+    <div class="sidebar">
+        <a href="/Dashmetricas.html">
+            <i class="icon fa-solid fa-chart-line"></i><span>Métricas</span>
+        </a>
+        <a href="/Dashcliente.html" class="active">
+            <i class="icon fa-solid fa-users"></i><span>Clientes</span>
+        </a>
+        <a href="/Dashcampaña.html">
+            <i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span>
+        </a>
+        <a href="/Dashusuarios.html">
+            <i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span>
+        </a>
+        <a href="/Dashboard.html">
+            <i class="icon fa-solid fa-house"></i><span>Inicio</span>
+        </a>
+        <div class="spacer"></div>
+        <a href="/Index.html">
+            <i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+        </a>
+    </div>
+
+    <!-- Contenido variable -->
+    <div class="content">
+        <ui:insert name="content" />
+    </div>
+
+</h:body>
+</html>

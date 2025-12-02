@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<ui:composition
+        template="/templates/layout.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:define name="pageTitle">Test Clientes JSF</ui:define>
+
+    <ui:define name="content">
+
+        <h1>Clientes</h1>
+
+        <h:form id="formClientes" prependId="false">
+
+            <!-- BARRA DE BÚSQUEDA -->
+            <div class="filter-bar">
+                <h:inputText id="buscarCliente"
+                             value="#{clienteBean.filtro}"
+                             styleClass="filter-input"
+                             placeholder="Buscar cliente por nombre, correo, empresa o ID..." />
+                <h:commandButton value="Limpiar"
+                                 styleClass="btn-clear"
+                                 action="#{clienteBean.limpiarFiltro}" />
+            </div>
+
+            <!-- TABLA JSF (h:dataTable) -->
+            <div class="table-container">
+                <h:dataTable id="tablaClientes"
+                             value="#{clienteBean.clientes}"
+                             var="c"
+                             styleClass="clientes-table"
+                             headerClass="clientes-header"
+                             rowClasses="row-par,row-impar">
+
+                    <!-- OJO: nombres reales según Cliente.java -->
+
+                    <h:column>
+                        <f:facet name="header">ID</f:facet>
+                        #{c.id_cliente}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Nombre</f:facet>
+                        #{c.nombre} #{c.apellido}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Correo</f:facet>
+                        #{c.email}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Empresa</f:facet>
+                        #{c.razon_social}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Teléfono</f:facet>
+                        #{c.telefono}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Estado</f:facet>
+                        <!-- si aún no tienes campo 'estado', dejamos algo fijo -->
+                        <h:outputText value="Activo" />
+                    </h:column>
+
+                    <!-- Columna para seleccionar fila -->
+                    <h:column>
+                        <f:facet name="header">Acción</f:facet>
+                        <h:commandLink value="Ver detalle">
+                            <f:setPropertyActionListener
+                                    target="#{clienteBean.clienteSeleccionado}"
+                                    value="#{c}" />
+                            <f:ajax render="detalleCliente grafico" />
+                        </h:commandLink>
+                    </h:column>
+
+                </h:dataTable>
+            </div>
+
+            <!-- DETALLE DEL CLIENTE SELECCIONADO -->
+            <h:panelGroup id="detalleCliente" layout="block"
+                          style="margin-top:2rem;" >
+                <h2>Detalle del cliente seleccionado</h2>
+                <div class="form-grid">
+
+                    <div class="form-row">
+                        <label>ID</label>
+                        <h:inputText value="#{clienteBean.clienteSeleccionado.id_cliente}"
+                                     readonly="true" />
+                    </div>
+
+                    <div class="form-row">
+                        <label>Nombre</label>
+                        <h:inputText value="#{clienteBean.clienteSeleccionado.nombre}"
+                                     readonly="true" />
+                    </div>
+
+                    <div class="form-row">
+                        <label>Apellido</label>
+                        <h:inputText value="#{clienteBean.clienteSeleccionado.apellido}"
+                                     readonly="true" />
+                    </div>
+
+                    <div class="form-row">
+                        <label>Correo</label>
+                        <h:inputText value="#{clienteBean.clienteSeleccionado.email}"
+                                     readonly="true" />
+                    </div>
+
+                    <div class="form-row">
+                        <label>Empresa</label>
+                        <h:inputText value="#{clienteBean.clienteSeleccionado.razon_social}"
+                                     readonly="true" />
+                    </div>
+
+                    <div class="form-row">
+                        <label>Teléfono</label>
+                        <h:inputText value="#{clienteBean.clienteSeleccionado.telefono}"
+                                     readonly="true" />
+                    </div>
+
+                </div>
+            </h:panelGroup>
+
+            <!-- PANEL DE INSIGHT / GRÁFICO SIMPLE -->
+            <h:panelGroup id="grafico" layout="block"
+                          style="margin-top:3rem;" >
+                <h3>Clientes activos</h3>
+                <div class="insight-panel">
+                    <div class="circle-chart">
+                        <div class="inner-circle">
+                            <span id="porcentaje-clientes-activos">
+                                #{clienteBean.porcentajeActivos}%
+                            </span>
+                        </div>
+                    </div>
+                    <p class="chart-label">
+                        Porcentaje de clientes activos respecto al total.
+                    </p>
+                </div>
+            </h:panelGroup>
+
+        </h:form>
+
+        <!-- jQuery: filtro en la tabla en vivo -->
+        <script type="text/javascript">
+            $(function () {
+                const $input = $("#buscarCliente");
+                $input.on("input", function () {
+                    const texto = $(this).val().toLowerCase();
+                    $("#tablaClientes tbody tr").each(function () {
+                        const fila = $(this).text().toLowerCase();
+                        $(this).toggle(fila.indexOf(texto) !== -1);
+                    });
+                });
+            });
+        </script>
+
+    </ui:define>
+</ui:composition>
