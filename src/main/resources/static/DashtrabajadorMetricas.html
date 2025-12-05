@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Métricas del trabajador</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/campaña.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .cards-grid {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .metric-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .metric-card h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1rem;
+    }
+    .metric-card .value {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .metric-card .label {
+      font-size: 0.85rem;
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="/DashtrabajadorMetricas.html" class="active">
+      <i class="icon fa-solid fa-chart-line"></i><span>Métricas</span>
+    </a>
+    <a href="/Dashtrabajador.html">
+      <i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span>
+    </a>
+    <a href="/DashtrabajadorChat.html">
+      <i class="icon fa-solid fa-users"></i><span>Chat clientes</span>
+    </a>
+    <a href="/DashtrabajadorDatos.html">
+      <i class="icon fa-solid fa-user"></i><span>Mis datos</span>
+    </a>
+    <a href="/DashtrabajadorReporte.html">
+      <i class="icon fa-solid fa-chart-simple"></i><span>Reportes</span>
+    </a>
+    <div class="spacer"></div>
+    <a href="#" onclick="cerrarSesion(); return false;">
+      <i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+    </a>
+  </div>
+
+  <div class="content">
+    <h1>Métricas del trabajador</h1>
+    <p id="bienvenida-trabajador" class="small-muted"></p>
+
+    <div class="cards-grid">
+      <div class="metric-card">
+        <h3>Total campañas asignadas</h3>
+        <div class="value" id="m-total">0</div>
+        <div class="label">Número de campañas asociadas a este trabajador.</div>
+      </div>
+      <div class="metric-card">
+        <h3>Campañas activas</h3>
+        <div class="value" id="m-activas">0</div>
+        <div class="label">Campañas en estado activo/asignado.</div>
+      </div>
+      <div class="metric-card">
+        <h3>Campañas finalizadas</h3>
+        <div class="value" id="m-finalizadas">0</div>
+        <div class="label">Campañas cerradas o finalizadas.</div>
+      </div>
+      <div class="metric-card">
+        <h3>Presupuesto gestionado</h3>
+        <div class="value" id="m-presupuesto">$0.00</div>
+        <div class="label">Suma del presupuesto de sus campañas.</div>
+      </div>
+    </div>
+
+    <div class="insight-panel" style="margin-top: 3rem;">
+      <h3>Rendimiento (campañas activas)</h3>
+      <div class="circle-chart">
+        <div class="inner-circle"><span id="porcentaje-activa">0%</span></div>
+      </div>
+      <p class="chart-label">
+        Porcentaje de campañas activas respecto al total que tiene asignadas.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8080";
+    const API_CAMPANIAS_USUARIO = API_BASE + "/api/campanias/usuario";
+
+    let usuarioActual = null;
+    let campaniasData = [];
+
+    function cerrarSesion() {
+      localStorage.removeItem("usuarioLogueado");
+      window.location.href = "LoginTrabajador.html";
+    }
+
+    function actualizarGraficoPorcentaje(spanId, porcentaje) {
+      const span = document.getElementById(spanId);
+      if (!span) return;
+      const chart = span.closest(".circle-chart");
+      if (!chart) return;
+      const valor = Math.max(0, Math.min(100, porcentaje));
+      span.textContent = valor + "%";
+      chart.style.setProperty("--percent", valor / 100);
+    }
+
+    function cargarUsuarioDesdeLocalStorage() {
+      const raw = localStorage.getItem("usuarioLogueado");
+      if (!raw) {
+        alert("Debe iniciar sesión primero");
+        window.location.href = "LoginTrabajador.html";
+        return;
+      }
+      try {
+        const data = JSON.parse(raw);
+        const usuarioId =
+          data.usuarioId ?? data.usuario_id ?? data.id ?? data.idUsuario ?? null;
+        if (!usuarioId) throw new Error("Sin ID de usuario");
+        usuarioActual = {
+          id: usuarioId,
+          username: data.username || "",
+          email: data.email || ""
+        };
+        const bienvenida = document.getElementById("bienvenida-trabajador");
+        if (bienvenida) {
+          bienvenida.textContent =
+            `Sesión iniciada como: ${usuarioActual.username} (${usuarioActual.email})`;
+        }
+      } catch (err) {
+        console.error("Error leyendo sesión:", err);
+        alert("Debe iniciar sesión primero");
+        window.location.href = "LoginTrabajador.html";
+      }
+    }
+
+    async function cargarMetricas() {
+      if (!usuarioActual) return;
+      try {
+        const res = await fetch(`${API_CAMPANIAS_USUARIO}/${usuarioActual.id}`);
+        if (!res.ok) throw new Error("Error al obtener campañas asignadas");
+        campaniasData = await res.json();
+        calcularMetricas();
+      } catch (err) {
+        console.error("Error cargando métricas:", err);
+      }
+    }
+
+    function calcularMetricas() {
+      const total = campaniasData.length;
+      const activas = campaniasData.filter(c =>
+        (c.estado || "").toLowerCase().includes("activa") ||
+        (c.estado || "").toLowerCase().includes("asignada")
+      ).length;
+      const finalizadas = campaniasData.filter(c =>
+        (c.estado || "").toLowerCase().includes("finalizada") ||
+        (c.estado || "").toLowerCase().includes("cerrada")
+      ).length;
+      const presupuesto = campaniasData.reduce(
+        (acc, c) => acc + (c.presupuesto || 0), 0
+      );
+
+      document.getElementById("m-total").textContent = total;
+      document.getElementById("m-activas").textContent = activas;
+      document.getElementById("m-finalizadas").textContent = finalizadas;
+      document.getElementById("m-presupuesto").textContent =
+        "$" + presupuesto.toFixed(2);
+
+      const porcentaje = total ? Math.round((activas / total) * 100) : 0;
+      actualizarGraficoPorcentaje("porcentaje-activa", porcentaje);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      cargarUsuarioDesdeLocalStorage();
+      cargarMetricas();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis datos</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/clientes.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="/DashtrabajadorMetricas.html">
+      <i class="icon fa-solid fa-chart-line"></i><span>Métricas</span>
+    </a>
+    <a href="/Dashtrabajador.html">
+      <i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span>
+    </a>
+    <a href="/DashtrabajadorChat.html">
+      <i class="icon fa-solid fa-users"></i><span>Chat clientes</span>
+    </a>
+    <a href="/DashtrabajadorDatos.html" class="active">
+      <i class="icon fa-solid fa-user"></i><span>Mis datos</span>
+    </a>
+    <a href="/DashtrabajadorReporte.html">
+      <i class="icon fa-solid fa-chart-simple"></i><span>Reportes</span>
+    </a>
+    <div class="spacer"></div>
+    <a href="#" onclick="cerrarSesion(); return false;">
+      <i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+    </a>
+    
+  </div>
+
+  <div class="content">
+    <h1>Mis datos</h1>
+    <p id="bienvenida-trabajador" class="small-muted"></p>
+
+    <div class="detail-section" style="margin-top: 2rem;">
+      <h2>Información del trabajador</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>ID usuario</label>
+          <input type="text" id="dato-id" readonly />
+        </div>
+        <div class="form-row">
+          <label>Usuario</label>
+          <input type="text" id="dato-username" readonly />
+        </div>
+        <div class="form-row">
+          <label>Email</label>
+          <input type="text" id="dato-email" readonly />
+        </div>
+        <div class="form-row">
+          <label>Rol</label>
+          <input type="text" id="dato-rol" readonly />
+        </div>
+        <div class="form-row">
+          <label>Profesión</label>
+          <input type="text" id="dato-profesion" readonly />
+        </div>
+        <div class="form-row">
+          <label>Activo</label>
+          <input type="text" id="dato-activo" readonly />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8080";
+    const API_USUARIOS = API_BASE + "/usuarios";
+
+    let usuarioActual = null;
+
+    function cerrarSesion() {
+      localStorage.removeItem("usuarioLogueado");
+      window.location.href = "LoginTrabajador.html";
+    }
+
+    function cargarUsuarioDesdeLocalStorage() {
+      const raw = localStorage.getItem("usuarioLogueado");
+      if (!raw) {
+        alert("Debe iniciar sesión primero");
+        window.location.href = "LoginTrabajador.html";
+        return;
+      }
+      try {
+        const data = JSON.parse(raw);
+        const usuarioId =
+          data.usuarioId ?? data.usuario_id ?? data.id ?? data.idUsuario ?? null;
+        if (!usuarioId) throw new Error("Sin ID de usuario");
+        usuarioActual = {
+          id: usuarioId,
+          username: data.username || "",
+          email: data.email || ""
+        };
+        const bienvenida = document.getElementById("bienvenida-trabajador");
+        if (bienvenida) {
+          bienvenida.textContent =
+            `Sesión iniciada como: ${usuarioActual.username} (${usuarioActual.email})`;
+        }
+      } catch (err) {
+        console.error("Error leyendo sesión:", err);
+        alert("Debe iniciar sesión primero");
+        window.location.href = "LoginTrabajador.html";
+      }
+    }
+
+    async function cargarMisDatos() {
+      if (!usuarioActual) return;
+      try {
+        const res = await fetch(`${API_USUARIOS}/${usuarioActual.id}`);
+        if (!res.ok) throw new Error("Error al obtener datos del usuario");
+        const u = await res.json();
+        document.getElementById("dato-id").value =
+          u.usuario_id ?? usuarioActual.id;
+        document.getElementById("dato-username").value =
+          u.username ?? usuarioActual.username;
+        document.getElementById("dato-email").value =
+          u.email ?? usuarioActual.email;
+        document.getElementById("dato-rol").value =
+          (u.rol && u.rol.nombre) ? u.rol.nombre : "";
+        document.getElementById("dato-profesion").value =
+          u.profesion ?? "";
+        document.getElementById("dato-activo").value =
+          (u.active === false) ? "No" : "Sí";
+      } catch (err) {
+        console.error("Error cargando datos del usuario:", err);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      cargarUsuarioDesdeLocalStorage();
+      cargarMisDatos();
+    });
+  </script>
+</body>
+</html>

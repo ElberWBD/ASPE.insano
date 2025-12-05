@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS.pe insano</title>
+    <link rel="stylesheet" href="CSS/Servicios.css">
+    <link rel="stylesheet" href="CSS/CarritodeCompras.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Gatefold+Demi&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <!-- Barra de navegación -->
+
+    <header class="header">
+        <div class="header-content">
+          <div class="menu-toggle" id="menu-toggle">☰</div>
+      
+          <ul class="links" id="nav-links">
+            <li><a href="/E-commerce.html">E-commerce & web</a></li>
+            <li><a href="/Consultoria.html">Consultoría en marketing</a></li>
+            <li><a href="/Eventos.html">Eventos & campañas BTL</a></li>
+            <li><a href="/Producción.html">Producción audiovisual & ATL</a></li>
+          </ul>
+      
+            <div class="header-buttons">
+  
+            <button id="loginButton" class="btn-submit" onclick="location.href='Login.html'">Iniciar sesión</button>
+            <span id="welcomeUser" class="welcome-user"></span>
+
+<button id="logoutButton" class="logout-button"
+    onclick="cerrarSesionCliente()"
+    style="
+        display:none;
+        background:#60ee99cb !important;
+        color:white !important;
+        padding:10px 10px !important;
+        border:none !important;
+        border-radius:50px !important;     /* Ovalado */
+        cursor:pointer !important;
+        font-size:15px !important;
+        font-weight:bold !important;
+        transition:all 0.3s ease !important;
+        width:150px !important;
+        box-shadow:0 4px 10px rgba(0,0,0,0.2) !important;
+        white-space:nowrap !important;      /* evita salto de línea */
+        margin-top:-3px !important;         /* sube el botón */
+    ">
+    Cerrar sesión
+</button>
+
+            <a href="Usuario.html" class="boton-persona"><i class="fa fa-user"></i></a>
+            <a href="Index.html" class="boton-persona"><i class="fa fa-home"></i></a>
+            
+            </div>
+        </div>
+      </header>
+    
+
+      
+      
+    <div class="carousel">
+        <div class="list">
+            <div class="item" style="background-image: url(IMG/pestañaeventos5.webp);">
+                <div class="content">
+                    <div class="title">Eventos temáticos</div><br>
+                    <div class="des">
+                        Organizamos eventos para el público general, con conceptos creativos, escenografía temática y actividades interactivas. Diseñados para atraer, emocionar y dejar huella. Ya sea un festival, feria o lanzamiento, lo convertimos en una experiencia que habla por tu marca.      </div>
+                </div>
+            </div>
+            
+            <div class="item" style="background-image: url(IMG/pestañaeventos1.webp);">
+                <div class="content">
+                    <div class="title">Activaciones de marca</div><br>
+                    <div class="des">
+                        Creamos experiencias memorables que generan conexión emocional con tu público. Diseñamos activaciones innovadoras en puntos clave, logrando recordación de marca y participación directa. Hacemos que tu mensaje cobre vida en espacios únicos y sorprendentes.          </div>
+                </div>
+            </div>
+    
+            <div class="item" style="background-image: url(IMG/pestañaeventos2.webp);">
+                <div class="content">
+                    <div class="title">Eventos corporativos</div><br>
+                    <div class="des">
+                        Planificamos y ejecutamos eventos corporativos alineados a tus objetivos. Desde lanzamientos hasta conferencias y team buildings, cuidamos cada detalle logístico y creativo para que tu marca brille y tus invitados vivan una experiencia profesional y memorable.         </div>         
+                </div>
+            </div>
+    
+            <div class="item" style="background-image: url(IMG/pestañaeventos3.webp);">
+                <div class="content">
+                    <div class="title">Promociones interactivas</div><br>
+                    <div class="des">
+                        Diseñamos promociones que invitan al público a interactuar directamente con tu producto. Usamos dinámicas creativas para captar atención, generar experiencia de marca y estimular la compra. Hacemos que probar tu marca sea una experiencia atractiva, directa y memorable.       </div>
+                    </div>
+            </div>
+    
+            <div class="item" style="background-image: url(IMG/pestañaeventos4.webp);">
+                <div class="content">
+                    <div class="title">Intervenciones urbanas creativas</div><br>
+                    <div class="des">
+                        Transformamos espacios públicos en escenarios de alto impacto para tu marca. Creamos experiencias inesperadas, visuales y participativas que generan conversación y visibilidad. Ideal para conectar con la audiencia de forma directa, creativa y memorable en entornos cotidianos.        </div>
+                    </div>
+            </div>
+    
+        </div>
+    
+        <!--next prev button-->
+        <div class="arrows">
+            <button class="prev"><</button>
+            <button class="next">></button>
+        </div>
+    </div>
+    
+    
+
+    <section id="barra-servicio" class="barra-servicio">
+      <div class="contenido-servicio">
+        <h1 class="titulo-principal">EL SIGUIENTE PASO</h1>
+    
+        <div class="bloque-imagen-texto">
+          <img src="IMG/07.webp" alt="Equipo creativo trabajando" class="imagen-servicio">
+    
+          <div class="texto-derecha">
+            <h3 class="subtitulo">UN NUEVO COMIENZO</h3>
+            <h2 class="titulo-alternativo">Tu visión. Nuestra estrategia.</h2>
+    
+            <p class="descripcion">
+              No dejes pasar la oportunidad de trabajar con un equipo que realmente se preocupa por tu éxito. 
+              Nuestro compromiso es brindarte soluciones personalizadas, adaptadas a tus necesidades y objetivos.
+            </p>
+            <p class="descripcion">
+              Sabemos que cada proyecto es único, y por eso nos dedicamos a entender a fondo tus retos para ofrecerte 
+              la mejor estrategia posible. Acompañamos cada paso del proceso para asegurar que cada decisión impulse tus resultados.
+            </p>
+            <img src="IMG/06.webp" alt="Imagen horizontal" class="imagen-horizontal">
+    
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+     
+    
+
+    <section id="barra-servicio2" class="seccion-multiproposito">
+        <!-- Título -->
+        <h1 class="h1animacion">
+          <span class="word">ENCUENTRA LO QUE BUSCAS</span>
+        </h1>
+    </section>
+
+    
+    
+    <div class="media-fullstrip">
+  
+        <div class="media-block">
+          <img src="IMG/imagen1barra.webp" alt="Imagen Proyecto 1">
+          <div class="alt-block-title">PRODUCCIÓN</div>
+        </div>
+      
+        <div class="media-block">
+          <img src="IMG/imagen2barra.webp" alt="Imagen Proyecto 2">
+          <div class="alt-block-title">AYUDA</div>
+        </div>
+      
+        <div class="media-block">
+            <img src="IMG/pistagif.webp" alt="Imagen Proyecto 2">
+            <div class="alt-block-title">MEJORA</div>
+        </div>
+      
+      </div>
+
+
+    
+      
+      <section class="services-container">
+        <h2 class="main-title">NUESTROS SERVICIOS</h2>
+
+        <section id="productos-lista" class="product-grid">
+            
+            <div class="product-card" data-id="1">
+                <div class="icon-wrapper"><i class="fa fa-shopping-cart"></i></div>
+                <h3 class="product-name">E-commerce</h3>
+                <p class="product-description">Creación de tiendas online escalables.</p>
+                <p class="product-price">La tarifa mínima puede ser de 100</p>
+                <button class="add-to-cart-btn" onclick="agregarAlCarrito(1)">Estoy interesado</button>
+            </div>
+
+            <div class="product-card" data-id="2">
+                <div class="icon-wrapper"><i class="fa fa-code"></i></div>
+                <h3 class="product-name">Aplicaciones Web</h3>
+                <p class="product-description">Desarrollo de sistemas a medida.</p>
+                <p class="product-price">La tarifa mínima puede ser de 200</p>
+                <button class="add-to-cart-btn" onclick="agregarAlCarrito(2)">Estoy interesado</button>
+            </div>
+            
+            <div class="product-card" data-id="3">
+                <div class="icon-wrapper"><i class="fa fa-bullhorn"></i></div>
+                <h3 class="product-name">Consultoría en marketing</h3>
+                <p class="product-description">Estrategias digitales y SEO avanzado.</p>
+                <p class="product-price">La tarifa mínima puede ser de 300</p>
+                <button class="add-to-cart-btn" onclick="agregarAlCarrito(3)">Estoy interesado</button>
+            </div>
+
+            <div class="product-card" data-id="4">
+                <div class="icon-wrapper"><i class="fa fa-calendar-alt"></i></div>
+                <h3 class="product-name">Eventos</h3>
+                <p class="product-description">Organización de eventos corporativos.</p>
+                <p class="product-price">$750</p>
+                <button class="add-to-cart-btn" onclick="agregarAlCarrito(4)">Estoy interesado</button>
+            </div>
+
+            <div class="product-card" data-id="5">
+                <div class="icon-wrapper"><i class="fa fa-lightbulb"></i></div>
+                <h3 class="product-name">Campañas BTL</h3>
+                <p class="product-description">Activaciones de marca en campo.</p>
+                <p class="product-price">La tarifa mínima puede ser de 400</p>
+                <button class="add-to-cart-btn" onclick="agregarAlCarrito(5)">Estoy interesado</button>
+            </div>
+
+            <div class="product-card" data-id="6">
+                <div class="icon-wrapper"><i class="fa fa-video"></i></div>
+                <h3 class="product-name">Producción audiovisual</h3>
+                <p class="product-description">Video, fotografía y edición profesional.</p>
+                <p class="product-price">La tarifa mínima puede ser de 500</p>
+                <button class="add-to-cart-btn" onclick="agregarAlCarrito(6)">Estoy interesado</button>
+            </div>
+            
+            <div class="product-card" data-id="7">
+                <div class="icon-wrapper"><i class="fa fa-desktop"></i></div>
+                <h3 class="product-name">Campañas ATL</h3>
+                <p class="product-description">Publicidad masiva en medios tradicionales.</p>
+                <p class="product-price">La tarifa mínima puede ser de 600</p>
+                <button class="add-to-cart-btn" onclick="agregarAlCarrito(7)">Estoy interesado</button>
+            </div>
+        </section>
+      </section>
+
+
+
+
+          <!-- BOTÓN DEL BOT -->
+      <button id="bot-float-btn" class="bot-float-btn">
+          🤖
+      </button>
+
+      <!-- VENTANA DEL BOT -->
+      <div id="chatbot-window" class="chatbot-window hidden">
+          <div class="chatbot-header">
+              <span>Asistente Virtual</span>
+              <button id="close-chatbot">✖</button>
+          </div>
+
+          <div class="chatbot-body" id="chatbot-body"></div>
+
+          <div class="chatbot-footer" id="chatbot-footer">
+              <!-- Aquí se cargarán los inputs dinámicos -->
+          </div>
+      </div>
+
+
+
+    <button id="whatsapp-float-btn" class="cart-float-btn whatsapp-float-btn"
+        onclick="window.open('https://wa.me/51923354074', '_blank')">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+         alt="WhatsApp">
+  </button>
+
+    <button id="cart-float-btn" class="cart-float-btn" onclick="toggleSidebar(true)">
+        <i class="fa fa-shopping-cart"></i>
+        <span id="cart-count" class="cart-count">0</span>
+    </button>
+    
+    <aside id="carrito-sidebar" class="carrito-sidebar">
+        <div class="sidebar-header">
+            <h3>🛍️ Tu Pedido</h3>
+            <button class="close-btn" onclick="toggleSidebar(false)">X</button>
+        </div>
+        
+        <ul id="carrito-lista" class="cart-items">
+            </ul>
+
+        <div class="cart-summary">
+            <div class="summary-line">
+                <span>Subtotal (Neto):</span>
+                <span id="cart-subtotal">$0.00</span>
+            </div>
+            <div class="summary-line">
+                <span>IGV (18%):</span>
+                <span id="cart-igv">$0.00</span>
+            </div>
+            <div class="summary-line total">
+                <span>Total a Pagar:</span>
+                <span id="cart-total-final">$0.00</span>
+            </div>
+        </div>
+        
+        <button class="checkout-btn" onclick="imprimirBoleta()">Imprimir Boleta/Pedido</button>
+    </aside>
+  
+
+
+
+    <!-- Footer -->
+        <footer>
+        <div class="footer-content">
+            <div class="logo-container">
+                <img src="IMG/as.webp" alt="Logo de la empresa" class="logo">
+            </div>
+            <div class="footer-links">
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Nosotros</a></li>
+                    <li><a href="#">Nuestros proyectos</a></li>
+                    <li><a href="#">Casos de éxito</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-soluciones">
+                <ul>
+                    <li><a href="#">E-Commerce & Web</a></li>
+                    <li><a href="#">Estrategias Digitales</a></li>
+                </ul>
+            </div>
+            <div class="contacto">
+                <p>Av. Ayacucho #918 Of. 202, Urb. Los Rosales, Santiago de Surco, Lima - Perú</p>
+                <p>Teléfonos: 01 223 6859 | 51 963 300 751</p>
+                <div class="redes-sociales">
+                    <a href="https://www.instagram.com" target="_blank">Instagram</a>
+                    <a href="https://www.facebook.com" target="_blank">Facebook</a>
+                    <a href="https://www.linkedin.com" target="_blank">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="JS/app.js"></script>
+    <script src="JS/bot.js"></script>
+    <script src="JS/script.js"></script>
+    <script src="JS/script3.js"></script>
+    <script src="JS/script4.js"></script>
+    <script src="JS/script5.js"></script>
+    <script src="JS/script6.js"></script>
+    <script src="JS/script7.js"></script>
+    <script src="JS/scriptbotoncelular.js"></script>
+    <script src="JS/session.js"></script>
+      
+      
+    </body>
+</html>

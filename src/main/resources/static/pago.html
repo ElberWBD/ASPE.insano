@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pago Neon</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #020202;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    /* Fondo animado */
+    .bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(96,238,153,0.12) 0%, #000 70%);
+      animation: pulse 5s infinite alternate;
+      z-index: -1;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      100% { opacity: 0.8; }
+    }
+
+    .contenedor {
+      width: 90%;
+      max-width: 1100px;
+      margin: 40px auto;
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      animation: fadeIn 1.2s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .metodos {
+      width: 420px;
+      background: rgba(15, 15, 15, 0.7);
+      border: 2px solid rgba(96,238,153,0.8);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(96,238,153,0.6);
+    }
+
+    .metodo {
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(96,238,153,0.35);
+      border-radius: 10px;
+      background: rgba(2,2,2,0.85);
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .metodo:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 15px rgba(96,238,153,0.7);
+    }
+
+    .detalle {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid rgba(96,238,153,0.35);
+      border-radius: 10px;
+      background: rgba(1,13,13,0.68);
+      display: none;
+      animation: fadeIn 0.5s;
+      text-align: center;
+    }
+
+    .detalle input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+    }
+
+    .qr {
+      margin-top: 10px;
+      display: none;
+      width: 200px;
+      height: 200px;
+      border-radius: 8px;
+      border: 2px solid rgba(96,238,153,0.45);
+      box-shadow: 0 0 12px rgba(96,238,153,0.25) inset;
+    }
+
+    .pago {
+      width: 320px;
+      background: rgba(15,15,15,0.7);
+      border: 2px solid rgba(96,238,153,0.8);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(96,238,153,0.6);
+      text-align: center;
+      height: fit-content;
+    }
+
+    .btn-pagar {
+      width: 100%;
+      padding: 15px;
+      background: rgba(96,238,153,0.95);
+      color: #000;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+      box-shadow: 0 8px 30px rgba(96,238,153,0.18);
+    }
+
+    .btn-pagar:hover {
+      background: rgba(74,223,181,0.95);
+      transform: scale(1.05);
+      box-shadow: 0 0 28px rgba(96,238,153,0.7);
+    }
+
+    /* Pantalla de confirmación */
+    .confirmacion {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.4s;
+    }
+
+    .confirmacion.activa {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .ventana {
+      background: linear-gradient(180deg, #022 0%, #001614 100%);
+      padding: 40px;
+      border-radius: 15px;
+      border: 2px solid rgba(96,238,153,0.9);
+      box-shadow: 0 0 30px rgba(96,238,153,0.6);
+      text-align: center;
+      animation: popIn 0.6s;
+      min-width: 320px;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .loader {
+      width: 60px;
+      height: 60px;
+      border: 6px solid rgba(96,238,153,0.45);
+      border-top-color: rgba(96,238,153,0.95);
+      border-radius: 50%;
+      margin: auto 0 18px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsivo */
+    @media (max-width: 800px) {
+      .contenedor { flex-direction: column; align-items: center; padding: 20px; }
+      .metodos { width: 100%; max-width: 540px; }
+      .pago { width: 100%; max-width: 420px; margin-top: 12px; }
+      .qr { width: 160px; height: 160px; }
+      .ventana { min-width: 260px; padding: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg"></div>
+
+  <div class="contenedor">
+    <div class="metodos">
+      <h2>Métodos de Pago</h2>
+
+      <div class="metodo" onclick="mostrar('tarjeta')">Pago con Tarjeta</div>
+      <div class="metodo" onclick="mostrar('yape')">Yape</div>
+      <div class="metodo" onclick="mostrar('plin')">Plin</div>
+
+      <div id="detalle-tarjeta" class="detalle">
+        <h3>Datos de Tarjeta</h3>
+        <input placeholder="Número de Tarjeta" inputmode="numeric">
+        <input placeholder="MM/YY">
+        <input placeholder="CVV" inputmode="numeric">
+      </div>
+
+      <div id="detalle-yape" class="detalle">
+        <h3>Yape QR</h3>
+        <!-- QR estético (no redirige a ningún lado) -->
+        <img class="qr" id="qr-yape" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=YAPE_SIMULACION" alt="QR Yape" />
+      </div>
+
+      <div id="detalle-plin" class="detalle">
+        <h3>Plin QR</h3>
+        <!-- QR estético (no redirige a ningún lado) -->
+        <img class="qr" id="qr-plin" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PLIN_SIMULACION" alt="QR Plin" />
+      </div>
+    </div>
+
+    <div class="pago" role="region" aria-label="Panel de pago">
+      <h2>Confirmar</h2>
+      <button class="btn-pagar" onclick="procesarPago()">Pagar</button>
+    </div>
+  </div>
+
+  <!-- Ventana de confirmación centralizada -->
+  <div class="confirmacion" id="confirmacion">
+    <div class="ventana" id="ventanaPago">
+      <div class="loader" id="loader"></div>
+      <h2 id="textoPago">Procesando pago...</h2>
+    </div>
+  </div>
+
+  <script>
+    function mostrar(tipo) {
+      document.querySelectorAll('.detalle').forEach(d => d.style.display = 'none');
+      document.querySelectorAll('.qr').forEach(q => q.style.display = 'none');
+
+      const detalle = document.getElementById(`detalle-${tipo}`);
+      if (!detalle) return;
+      detalle.style.display = 'block';
+
+      if (tipo === 'yape') document.getElementById('qr-yape').style.display = 'block';
+      if (tipo === 'plin') document.getElementById('qr-plin').style.display = 'block';
+    }
+
+    function procesarPago() {
+      const c = document.getElementById("confirmacion");
+      const loader = document.getElementById("loader");
+      const texto = document.getElementById("textoPago");
+
+      // Mostrar ventana central
+      c.classList.add("activa");
+      loader.style.display = 'block';
+      texto.textContent = 'Procesando pago...';
+
+      // Simular procesamiento y animación
+      setTimeout(() => {
+        loader.style.display = "none";
+        texto.innerHTML = "<span style='color: rgba(96,238,153,0.95); font-weight:700;'>✔ Pago Completado</span>";
+      }, 1800);
+
+      // Redirigir a Usuario.html después de la animación
+      setTimeout(() => {
+        window.location.href = "Usuario.html";
+      }, 3200);
+    }
+  </script>
+</body>
+</html>

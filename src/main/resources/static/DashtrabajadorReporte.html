@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel del Trabajador</title>
+
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<link rel="stylesheet" href="CSS/Dashboard-estilos/campaña.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+.btn-exportar {
+  background:#2f6ae6;
+  color:#fff;
+  border:none;
+  padding:10px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  margin-bottom:10px;
+  font-size:15px;
+}
+.btn-pdf {
+  background:#d9534f;
+  color:#fff;
+  border:none;
+  padding:5px 10px;
+  border-radius:4px;
+  cursor:pointer;
+}
+.metricas-box {
+  margin-top: 25px;
+  padding: 15px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border: 1px solid #dcdcdc;
+}
+.metricas-box table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.metricas-box th, 
+.metricas-box td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+.metricas-titulo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.table-container {
+  overflow-x: auto;
+}
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-container th, .table-container td {
+  padding: 8px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="/DashtrabajadorMetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+  <a href="/Dashtrabajador.html" class="active"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+  <a href="/DashtrabajadorChat.html"><i class="icon fa-solid fa-users"></i><span>Chat clientes</span></a>
+  <a href="/DashtrabajadorDatos.html"><i class="icon fa-solid fa-user"></i><span>Mis datos</span></a>
+  <a href="/DashtrabajadorReporte.html"><i class="icon fa-solid fa-chart-simple"></i><span>Reportes</span></a>
+  <div class="spacer"></div>
+  <a href="#" onclick="cerrarSesion(); return false;"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+</div>
+
+<div class="content">
+  <h1>Panel del Trabajador</h1>
+  <p id="bienvenida-trabajador"></p>
+
+  <button class="btn-exportar" onclick="exportarExcelGeneral()">
+    <i class="fa-solid fa-file-excel"></i> Exportar Todas las Campañas (Excel)
+  </button>
+
+  <div class="filter-bar">
+    <input type="text" id="buscar_campania" placeholder="Buscar campaña por nombre, descripción, estado o ID...">
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID Cliente</th>
+          <th>Nombre Cliente</th>
+          <th>Teléfono</th>
+          <th>ID Campaña</th>
+          <th>Nombre Campaña</th>
+          <th>Descripción</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Fin</th>
+          <th>Presupuesto</th>
+          <th>IGV (18%)</th>
+          <th>Total</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-campanias"></tbody>
+    </table>
+  </div>
+
+  <div id="metricas-container"></div>
+
+</div>
+
+<script>
+const API_CAMPANIAS = "http://localhost:8080/api/campanias";
+let campaniasData = [];
+
+// =================================================
+// Cerrar Sesión
+// =================================================
+function cerrarSesion() {
+  localStorage.removeItem("usuarioLogueado");
+  window.location.href = "LoginTrabajador.html";
+}
+
+// =================================================
+// Cargar campañas
+// =================================================
+async function cargarCampanias() {
+  try {
+    const res = await fetch(API_CAMPANIAS);
+    if (!res.ok) throw new Error("Error al obtener campañas");
+
+    campaniasData = await res.json();
+    const terminadas = campaniasData.filter(c => (c.estado ?? "").toUpperCase() === "TERMINADO");
+
+    mostrarCampanias(terminadas);
+
+  } catch (error) {
+    console.error("Error al cargar campañas:", error);
+  }
+}
+
+// =================================================
+// Mostrar campañas + MÉTRICAS AL FINAL
+// =================================================
+function mostrarCampanias(lista) {
+  const tbody = document.getElementById("tabla-campanias");
+  tbody.innerHTML = "";
+
+  let totalPresupuesto = 0;
+  let totalIGV = 0;
+  let totalFinal = 0;
+
+  lista.forEach(camp => {
+    const cliente = camp.cliente ?? {};
+    // Asegurar que presupuesto sea número válido
+    const presupuesto = Number.parseFloat(camp.presupuesto ?? 0) || 0;
+    const igv = presupuesto * 0.18;
+    const total = presupuesto + igv;
+
+    totalPresupuesto += presupuesto;
+    totalIGV += igv;
+    totalFinal += total;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${cliente.id ?? "-"}</td>
+      <td>${(cliente.nombre ?? "") + " " + (cliente.apellido ?? "")}</td>
+      <td>${cliente.telefono ?? "-"}</td>
+      <td>${camp.id ?? "-"}</td>
+      <td>${camp.nombre ?? "-"}</td>
+      <td>${camp.descripcion ?? "-"}</td>
+      <td>${camp.fechaInicio ?? "-"}</td>
+      <td>${camp.fechaFin ?? "-"}</td>
+      <td>${presupuesto.toFixed(2)}</td>
+      <td>${igv.toFixed(2)}</td>
+      <td>${total.toFixed(2)}</td>
+      <td><button class="btn-pdf">PDF</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Asignar botones de PDF
+  document.querySelectorAll(".btn-pdf").forEach((btn, i) => {
+    btn.onclick = () => exportarPDF(lista[i]);
+  });
+
+  // Crear tabla de métricas
+  const metricas = `
+    <div class="metricas-box">
+      <div class="metricas-titulo">📊 Métricas Generales</div>
+      <table>
+        <tr>
+          <th>Total Campañas</th>
+          <th>Suma Presupuestos (S/)</th>
+          <th>Suma IGV (S/)</th>
+          <th>Ganancia Total (S/)</th>
+        </tr>
+        <tr>
+          <td>${lista.length}</td>
+          <td>${totalPresupuesto.toFixed(2)}</td>
+          <td>${totalIGV.toFixed(2)}</td>
+          <td>${totalFinal.toFixed(2)}</td>
+        </tr>
+      </table>
+    </div>
+  `;
+
+  document.getElementById("metricas-container").innerHTML = metricas;
+}
+
+// =================================================
+// Buscador
+// =================================================
+document.getElementById("buscar_campania").addEventListener("input", () => {
+  const txt = document.getElementById("buscar_campania").value.trim().toLowerCase();
+
+  const filtradas = campaniasData.filter(c => {
+    const estado = (c.estado ?? "").toUpperCase();
+    if (estado !== "TERMINADO") return false;
+
+    const comparar = `${c.id} ${c.nombre} ${c.descripcion} ${c.estado}`.toLowerCase();
+    return comparar.includes(txt);
+  });
+
+  mostrarCampanias(filtradas);
+});
+
+// =================================================
+// Exportar Excel
+// =================================================
+function exportarExcelGeneral() {
+  const terminadas = campaniasData.filter(c => (c.estado ?? "").toUpperCase() === "TERMINADO");
+
+  const datos = terminadas.map(c => {
+    const cliente = c.cliente ?? {};
+    const presupuesto = Number.parseFloat(c.presupuesto ?? 0) || 0;
+    const igv = presupuesto * 0.18;
+    const total = presupuesto + igv;
+
+    return {
+      "ID Cliente": cliente.id ?? "-",
+      "Nombre Cliente": (cliente.nombre ?? "") + " " + (cliente.apellido ?? ""),
+      "Teléfono": cliente.telefono ?? "-",
+      "ID Campaña": c.id ?? "-",
+      "Nombre Campaña": c.nombre ?? "-",
+      "Descripción": c.descripcion ?? "-",
+      "Fecha Inicio": c.fechaInicio ?? "-",
+      "Fecha Fin": c.fechaFin ?? "-",
+      "Presupuesto (S/)": presupuesto.toFixed(2),
+      "IGV (S/)": igv.toFixed(2),
+      "Total (S/)": total.toFixed(2)
+    };
+  });
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(datos || []);
+  // Ajuste ancho columnas (si hay datos)
+  if (datos.length > 0) {
+    ws['!cols'] = Object.keys(datos[0]).map(() => ({ wpx: 140 }));
+  }
+  XLSX.utils.book_append_sheet(wb, ws, "Campañas Terminadas");
+  XLSX.writeFile(wb, "campañas_terminadas.xlsx");
+}
+
+// =================================================
+// Exportar PDF individual - versión embellecida AS.PE
+// =================================================
+async function exportarPDF(camp) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  // ===========================
+  // 1) LOGO AS.PE 
+  // ===========================
+  doc.setFillColor(47, 106, 230);
+  doc.rect(0, 0, pageWidth, 70, "F");
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.text("AS.PE - Boleta de Servicio", pageWidth / 2, 40, { align: "center" });
+
+  doc.setTextColor(0, 0, 0);
+
+  // ===========================
+  // Datos cliente + campaña
+  // ===========================
+  const fechaEmision = new Date().toLocaleString();
+  const cliente = camp.cliente ?? {};
+
+  const presupuesto = Number(camp.presupuesto ?? 0) || 0;
+  const igv = presupuesto * 0.18;
+  const total = presupuesto + igv;
+
+  let y = 90;
+
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.text("INFORMACIÓN DEL CLIENTE", 40, y);
+  y += 10;
+  doc.setDrawColor(47, 106, 230);
+  doc.line(40, y, pageWidth - 40, y);
+  y += 20;
+
+  doc.setFont("helvetica", "normal");
+  doc.text(`ID Cliente: ${cliente.id ?? "-"}`, 40, y); y += 16;
+  doc.text(`Nombre: ${(cliente.nombre ?? "") + " " + (cliente.apellido ?? "")}`, 40, y); y += 16;
+  doc.text(`Teléfono: ${cliente.telefono ?? "-"}`, 40, y); y += 16;
+  doc.text(` `, 40, y); y += 16;
+  doc.text(` `, 40, y); y += 30;
+
+  doc.setFont("helvetica", "bold");
+  doc.text("INFORMACIÓN DE CAMPAÑA", 40, y);
+  y += 10;
+  doc.line(40, y, pageWidth - 40, y);
+  y += 20;
+
+  doc.setFont("helvetica", "normal");
+  doc.text(`ID Campaña: ${camp.id ?? "-"}`, 40, y); y += 16;
+  doc.text(`Nombre Campaña: ${camp.nombre ?? "-"}`, 40, y); y += 16;
+  doc.text(`Descripción: ${camp.descripcion ?? "-"}`, 40, y); y += 16;
+  doc.text(`Fecha Inicio: ${camp.fechaInicio ?? "-"}`, 40, y); y += 16;
+  doc.text(`Fecha Fin: ${fechaEmision}`, 40, y); // fecha fin = fecha emision
+  y += 30;
+
+  // ===========================
+  // TABLA
+  // ===========================
+  doc.autoTable({
+    startY: y,
+    head: [["Descripción", "Cantidad", "Precio Unit.", "IGV (18%)", "Total"]],
+    body: [
+      [
+        camp.descripcion ?? "-",
+        "1",
+        presupuesto.toFixed(2),
+        igv.toFixed(2),
+        total.toFixed(2)
+      ]
+    ],
+    theme: "grid",
+    margin: { left: 40, right: 40 },
+    headStyles: { fillColor: [47, 106, 230], textColor: 255, fontStyle: "bold" },
+    styles: { fontSize: 10 }
+  });
+
+  const afterTable = doc.lastAutoTable.finalY + 20;
+
+  // ===========================
+  // RESUMEN DE PAGO
+  // ===========================
+  doc.setFont("helvetica", "bold");
+  doc.text(`SUBTOTAL: S/ ${presupuesto.toFixed(2)}`, pageWidth - 60, afterTable, { align: "right" });
+  doc.text(`IGV (18%): S/ ${igv.toFixed(2)}`, pageWidth - 60, afterTable + 18, { align: "right" });
+  doc.text(`TOTAL: S/ ${total.toFixed(2)}`, pageWidth - 60, afterTable + 36, { align: "right" });
+
+  // ===========================
+  // GRÁFICO (Presupuesto vs IGV vs Total)
+  // ===========================
+  const canvas = document.createElement("canvas");
+  canvas.width = 400;
+  canvas.height = 260;
+
+  const ctx = canvas.getContext("2d");
+
+  // Dibujar barras básicas
+  const datos = [presupuesto, igv, total];
+  const etiquetas = ["Presupuesto", "IGV", "Total"];
+  const colores = ["#2f6ae6", "#e67e22", "#27ae60"];
+
+  const baseY = 220;
+
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "#000";
+  ctx.textAlign = "center";
+  ctx.fillText("Gráfico de Valores (S/)", 200, 30);
+
+  const max = Math.max(...datos);
+
+  datos.forEach((val, i) => {
+    const barHeight = (val / max) * 160;
+
+    ctx.fillStyle = colores[i];
+    ctx.fillRect(70 + i * 110, baseY - barHeight, 60, barHeight);
+
+    ctx.fillStyle = "#000";
+    ctx.fillText(etiquetas[i], 100 + i * 110, baseY + 20);
+    ctx.fillText("S/ " + val.toFixed(2), 100 + i * 110, baseY - barHeight - 10);
+  });
+
+  // Insertar gráfico en PDF
+  const imgData = canvas.toDataURL("image/png");
+  doc.addImage(imgData, "PNG", 80, afterTable + 60, 400, 260);
+
+  // ===========================
+  // Footer
+  // ===========================
+  doc.setFontSize(9);
+  doc.setTextColor(100);
+  doc.text("Gracias por confiar en AS.PE", pageWidth / 2, doc.internal.pageSize.getHeight() - 30, { align: "center" });
+
+  doc.save(`campaña_${camp.id}.pdf`);
+}
+// =================================================
+window.addEventListener("DOMContentLoaded", cargarCampanias);
+</script>
+
+</body>
+</html>

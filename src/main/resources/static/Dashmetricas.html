@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Métricas generales</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/metricas.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="/Dashmetricas.html" class="active">
+      <i class="icon fa-solid fa-chart-line"></i><span>Métricas</span>
+    </a>
+    
+    <a href="/clientes/test.xhtml"><i class="icon fa-solid fa-table"></i><span>Clientes</span>
+
+    <a href="/Dashcampaña.html">
+      <i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span>
+    </a>
+    <a href="/Dashusuarios.html">
+      <i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span>
+    </a>
+    <a href="/Dashboard.html">
+      <i class="icon fa-solid fa-house"></i><span>Inicio</span>
+    </a>
+    <div class="spacer"></div>
+    <a href="/Logindash.html">
+      <i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+    </a>
+  </div>
+
+  <div class="content">
+    <h1>Métricas generales</h1>
+
+    <div class="cards-grid">
+      <div class="metric-card">
+        <h3>Total campañas</h3>
+        <div class="value" id="m-total-campanias">0</div>
+        <div class="label">Cantidad de campañas registradas.</div>
+      </div>
+      <div class="metric-card">
+        <h3>Campañas activas</h3>
+        <div class="value" id="m-activas">0</div>
+        <div class="label">En ejecución o activas.</div>
+      </div>
+      <div class="metric-card">
+        <h3>Clientes</h3>
+        <div class="value" id="m-clientes">0</div>
+        <div class="label">Clientes registrados en el sistema.</div>
+      </div>
+    </div>
+
+    <div class="insight-panel" style="margin-top: 3rem;">
+      <h3>Campañas activas sobre el total</h3>
+      <div class="circle-chart">
+        <div class="inner-circle"><span id="porcentaje-activa">0%</span></div>
+      </div>
+      <p class="chart-label">
+        Porcentaje de campañas activas respecto al total de campañas.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8080";
+    const API_CAMPANIAS = API_BASE + "/api/campanias";
+    const API_CLIENTES = API_BASE + "/clientes/listar";
+
+    let campanias = [];
+    let clientes = [];
+
+    function actualizarGraficoPorcentaje(spanId, porcentaje) {
+      const span = document.getElementById(spanId);
+      if (!span) return;
+      const chart = span.closest(".circle-chart");
+      if (!chart) return;
+      const valor = Math.max(0, Math.min(100, porcentaje));
+      span.textContent = valor + "%";
+      chart.style.setProperty("--percent", valor / 100);
+    }
+
+    async function cargarMetricas() {
+      try {
+        const [resCamp, resCli] = await Promise.all([
+          fetch(API_CAMPANIAS),
+          fetch(API_CLIENTES)
+        ]);
+
+        if (!resCamp.ok) throw new Error("Error al obtener campañas");
+        if (!resCli.ok) throw new Error("Error al obtener clientes");
+
+        campanias = await resCamp.json();
+        clientes = await resCli.json();
+
+        const totalCamp = campanias.length;
+        const activas = campanias.filter(c =>
+          (c.estado || "").toLowerCase().includes("activa")
+        ).length;
+
+        document.getElementById("m-total-campanias").textContent = totalCamp;
+        document.getElementById("m-activas").textContent = activas;
+        document.getElementById("m-clientes").textContent = clientes.length;
+
+        const porcentaje = totalCamp ? Math.round((activas / totalCamp) * 100) : 0;
+        actualizarGraficoPorcentaje("porcentaje-activa", porcentaje);
+
+      } catch (err) {
+        console.error("Error cargando métricas:", err);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", cargarMetricas);
+  </script>
+</body>
+</html>

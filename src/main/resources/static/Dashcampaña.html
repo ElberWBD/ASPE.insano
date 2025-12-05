@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campañas</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/campaña.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+</head>
+<body>
+  <!-- Menú lateral conservado -->
+  <div class="sidebar">
+    <a href="/Dashmetricas.html"><i class="icon fa-solid fa-chart-line"></i><span>Métricas</span></a>
+    <a href="/clientes/test.xhtml"><i class="icon fa-solid fa-table"></i><span>Clientes</span>
+    <a href="/Dashcampaña.html" class="active"><i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span></a>
+    <a href="/Dashusuarios.html"><i class="icon fa-solid fa-user-gear"></i><span>Usuarios</span></a>
+    <a href="/Dashboard.html"><i class="icon fa-solid fa-house"></i><span>Inicio</span></a>
+    <div class="spacer"></div>
+    <a href="/Logindash.html"><i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+  </div>
+
+  <div class="content">
+    <h1>Campañas (consulta)</h1>
+
+    <!-- Buscador de campañas -->
+    <div class="filter-bar">
+      <input
+        type="text"
+        id="buscar_campania"
+        placeholder="Buscar campaña por nombre, descripción, estado o ID..."
+      />
+    </div>
+
+    <!-- Tabla de campañas -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Presupuesto</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-campanias"></tbody>
+      </table>
+    </div>
+
+    <!-- Sección de detalles: solo lectura -->
+    <div class="detail-section" style="margin-top: 2rem;">
+      <h2>Detalle de la campaña seleccionada</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>ID Campaña</label>
+          <input type="text" id="detalle_id" readonly />
+        </div>
+        <div class="form-row">
+          <label>Cliente</label>
+          <input type="text" id="detalle_cliente" readonly />
+        </div>
+        <div class="form-row">
+          <label>Servicio</label>
+          <input type="text" id="detalle_nombre" readonly />
+        </div>
+        <div class="form-row">
+          <label>Descripción</label>
+          <input type="text" id="detalle_descripcion" readonly />
+        </div>
+        <div class="form-row">
+          <label>Fecha Inicio</label>
+          <input type="text" id="detalle_fecha_inicio" readonly />
+        </div>
+        <div class="form-row">
+          <label>Fecha Fin</label>
+          <input type="text" id="detalle_fecha_fin" readonly />
+        </div>
+        <div class="form-row">
+          <label>Presupuesto</label>
+          <input type="text" id="detalle_presupuesto" readonly />
+        </div>
+        <div class="form-row">
+          <label>Estado</label>
+          <input type="text" id="detalle_estado" readonly />
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de métricas -->
+    <div class="insight-panel" style="margin-top: 3rem;">
+      <h3>Campañas activas</h3>
+      <div class="circle-chart">
+        <div class="inner-circle"><span id="porcentaje-activa">0%</span></div>
+      </div>
+      <p class="chart-label">Porcentaje de campañas activas</p> 
+    </div>
+  </div>
+
+  <!-- ====================== SCRIPT JS ====================== -->
+  <script>
+    const API_CAMPANIAS = "http://localhost:8080/api/campanias";
+    let campaniasData = [];
+
+    function actualizarGraficoPorcentaje(spanId, porcentaje) {
+      const span = document.getElementById(spanId);
+      if (!span) return;
+      const chart = span.closest(".circle-chart");
+      if (!chart) return;
+      const valor = Math.max(0, Math.min(100, porcentaje));
+      span.textContent = valor + "%";
+      chart.style.setProperty("--percent", valor / 100);
+    }
+
+    // Cargar y mostrar campañas
+    async function cargarCampanias() {
+      try {
+        const res = await fetch(API_CAMPANIAS);
+        if (!res.ok) throw new Error("Error al obtener campañas");
+        campaniasData = await res.json();
+        mostrarCampanias(campaniasData);
+        actualizarEstadisticas();
+      } catch (err) {
+        console.error("Error al cargar campañas:", err);
+      }
+    }
+
+    function mostrarCampanias(lista) {
+      const tbody = document.getElementById("tabla-campanias");
+      tbody.innerHTML = "";
+      lista.forEach(camp => {
+        const id = camp.id ?? camp.idCampania ?? camp.id_campania ?? "-";
+        const clienteStr = camp.cliente
+          ? `ID: ${camp.cliente.id ?? camp.cliente.idCliente ?? camp.cliente.id_cliente ?? "-"} - ${camp.cliente.nombre ?? ""} ${camp.cliente.apellido ?? ""}`
+          : camp.idCliente
+            ? `ID: ${camp.idCliente}`
+            : "Sin cliente";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${id}</td>
+          <td>${clienteStr}</td>
+          <td>${camp.nombre ?? "-"}</td>
+          <td>${camp.descripcion ?? "-"}</td>
+          <td>${camp.fechaInicio ?? camp.fecha_inicio ?? "-"}</td>
+          <td>${camp.fechaFin ?? camp.fecha_fin ?? "-"}</td>
+          <td>${camp.presupuesto ?? "-"}</td>
+          <td>${camp.estado ?? "-"}</td>
+        `;
+        tr.addEventListener("click", () => mostrarDetalle(camp));
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Mostrar detalle en campos de solo lectura
+    function mostrarDetalle(c) {
+      const getVal = (x) => x ?? "";
+      document.getElementById("detalle_id").value          = c.id ?? c.idCampania ?? c.id_campania ?? "";
+      let clienteTxt;
+      if (c.cliente) {
+        const cid  = c.cliente.id ?? c.cliente.idCliente ?? c.cliente.id_cliente ?? "";
+        const nom  = c.cliente.nombre ?? "";
+        const ape  = c.cliente.apellido ?? "";
+        clienteTxt = `ID: ${cid} - ${nom} ${ape}`;
+      } else if (c.idCliente) {
+        clienteTxt = `ID: ${c.idCliente}`;
+      } else {
+        clienteTxt = "";
+      }
+      document.getElementById("detalle_cliente").value     = clienteTxt;
+      document.getElementById("detalle_nombre").value      = getVal(c.nombre);
+      document.getElementById("detalle_descripcion").value = getVal(c.descripcion);
+      document.getElementById("detalle_fecha_inicio").value= getVal(c.fechaInicio ?? c.fecha_inicio);
+      document.getElementById("detalle_fecha_fin").value   = getVal(c.fechaFin ?? c.fecha_fin);
+      document.getElementById("detalle_presupuesto").value = c.presupuesto ?? "";
+      document.getElementById("detalle_estado").value      = getVal(c.estado);
+    }
+
+    // Filtrar campañas al escribir
+    const buscarInput = document.getElementById("buscar_campania");
+    buscarInput.addEventListener("input", () => {
+      const texto = buscarInput.value.trim().toLowerCase();
+      if (!texto) {
+        mostrarCampanias(campaniasData);
+        return;
+      }
+      const filtradas = campaniasData.filter(c => {
+        const comp = `${c.id ?? c.idCampania ?? c.id_campania ?? ""} ${c.nombre ?? ""} ${c.descripcion ?? ""} ${c.estado ?? ""}`.toLowerCase();
+        return comp.includes(texto);
+      });
+      mostrarCampanias(filtradas);
+    });
+
+    // Actualiza el porcentaje de campañas activas
+    function actualizarEstadisticas() {
+      const total = campaniasData.length;
+      const activas = campaniasData.filter(c =>
+        (c.estado || "").toLowerCase().includes("activa")
+      ).length;
+      const porcentaje = total ? Math.round((activas / total) * 100) : 0;
+      actualizarGraficoPorcentaje("porcentaje-activa", porcentaje);
+    }
+
+    window.addEventListener('DOMContentLoaded', cargarCampanias);
+  </script>
+</body>
+</html>

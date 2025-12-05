@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel del Trabajador - Todas las Campañas</title>
+  <link rel="stylesheet" href="CSS/Dashboard-estilos/campaña.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- SIDEBAR DEL TRABAJADOR -->
+  <div class="sidebar">
+    <a href="/DashtrabajadorMetricas.html">
+      <i class="icon fa-solid fa-chart-line"></i><span>Métricas</span>
+    </a>
+    <a href="/Dashtrabajador.html" class="active">
+      <i class="icon fa-solid fa-bullhorn"></i><span>Campañas</span>
+    </a>
+    <a href="/DashtrabajadorChat.html">
+      <i class="icon fa-solid fa-users"></i><span>Chat clientes</span>
+    </a>
+    <a href="/DashtrabajadorDatos.html">
+      <i class="icon fa-solid fa-user"></i><span>Mis datos</span>
+    </a>
+    <a href="/DashtrabajadorReporte.html">
+      <i class="icon fa-solid fa-chart-simple"></i><span>Reportes</span>
+    </a>
+    <div class="spacer"></div>
+    <a href="#" onclick="cerrarSesion(); return false;">
+      <i class="icon fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+    </a>
+  </div>
+
+  <div class="content">
+    <h1>Panel del Trabajador</h1>
+    <p id="bienvenida-trabajador" class="small-muted"></p>
+
+    <!-- Buscador -->
+    <div class="filter-bar">
+      <input
+        type="text"
+        id="buscar_campania"
+        placeholder="Buscar campaña por nombre, descripción, estado o ID..."
+      />
+    </div>
+
+    <!-- Tabla de campañas -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Presupuesto</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-campanias"></tbody>
+      </table>
+    </div>
+
+    <!-- Detalle campaña -->
+    <div class="detail-section" style="margin-top: 2rem;">
+      <h2>Detalle de la campaña seleccionada</h2>
+      <p class="small-muted" id="mensaje-detalle">Seleccione una campaña de la tabla para ver su detalle.</p>
+      <div class="form-grid">
+        <div class="form-row"><label>ID Campaña</label><input type="text" id="detalle_id" readonly /></div>
+        <div class="form-row"><label>Cliente</label><input type="text" id="detalle_cliente" readonly /></div>
+        <div class="form-row"><label>Nombre</label><input type="text" id="detalle_nombre" readonly /></div>
+        <div class="form-row"><label>Descripción</label><input type="text" id="detalle_descripcion" readonly /></div>
+        <div class="form-row"><label>Fecha Inicio</label><input type="text" id="detalle_fecha_inicio" readonly /></div>
+        <div class="form-row"><label>Fecha Fin</label><input type="text" id="detalle_fecha_fin" readonly /></div>
+        <div class="form-row"><label>Presupuesto</label><input type="text" id="detalle_presupuesto" readonly /></div>
+        <div class="form-row">
+          <label>Estado</label>
+          <input type="text" id="detalle_estado" />
+          <button id="btnActualizarEstado">Actualizar Estado</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Métrica de campañas activas -->
+    <div class="insight-panel" style="margin-top: 3rem;">
+      <h3>Campañas activas</h3>
+      <div class="circle-chart">
+        <div class="inner-circle"><span id="porcentaje-activa">0%</span></div>
+      </div>
+      <p class="chart-label">Porcentaje de campañas activas</p>
+    </div>
+  </div>
+
+<script>
+const API_BASE = "http://localhost:8080";
+const API_CAMPANIAS = API_BASE + "/api/campanias";
+
+let campaniasData = [];
+
+function cerrarSesion() {
+  localStorage.removeItem("usuarioLogueado");
+  window.location.href = "LoginTrabajador.html";
+}
+
+function cargarUsuarioDesdeLocalStorage() {
+  const raw = localStorage.getItem("usuarioLogueado");
+  if (!raw) {
+    alert("Debe iniciar sesión primero");
+    window.location.href = "LoginTrabajador.html";
+    return;
+  }
+  try {
+    const data = JSON.parse(raw);
+    document.getElementById("bienvenida-trabajador").textContent =
+      `Sesión iniciada como: ${data.username || ""} (${data.email || ""})`;
+  } catch (err) {
+    console.error("Error leyendo sesión:", err);
+    alert("Debe iniciar sesión primero");
+    window.location.href = "LoginTrabajador.html";
+  }
+}
+
+async function cargarCampanias() {
+  try {
+    const res = await fetch(API_CAMPANIAS);
+    if (!res.ok) throw new Error("Error al obtener campañas");
+    campaniasData = await res.json();
+    mostrarCampanias(campaniasData);
+    actualizarEstadisticas();
+  } catch (err) {
+    console.error("Error al cargar campañas:", err);
+  }
+}
+
+function mostrarCampanias(lista) {
+  const tbody = document.getElementById("tabla-campanias");
+  tbody.innerHTML = "";
+
+  lista.forEach(camp => {
+    console.log(camp); // Añade esta línea para ver qué propiedades tiene cada campaña
+
+    const idCampania = camp.idCampania ?? camp.id_campania ?? camp.id ?? "-";
+    const idCliente = camp.idCliente ?? camp.id_cliente ?? "-";
+    const nombreCliente = camp.cliente?.nombre ?? "-";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${idCampania}</td>
+      <td>${idCliente}</td>
+      <td>${nombreCliente}</td>
+      <td>${camp.descripcion ?? "-"}</td>
+      <td>${camp.fechaInicio ?? camp.fecha_inicio ?? "-"}</td>
+      <td>${camp.fechaFin ?? camp.fecha_fin ?? "-"}</td>
+      <td>${camp.presupuesto ?? "-"}</td>
+      <td>${camp.estado ?? "-"}</td>
+    `;
+    tr.addEventListener("click", () => mostrarDetalle(camp));
+    tbody.appendChild(tr);
+  });
+}
+
+
+function mostrarDetalle(campania) {
+  document.getElementById("mensaje-detalle").style.display = "none";
+
+  document.getElementById("detalle_id").value = campania.id ?? "";
+  document.getElementById("detalle_cliente").value = campania.idCliente ?? (campania.cliente?.nombre ?? "");
+  document.getElementById("detalle_nombre").value = campania.nombre ?? "";
+  document.getElementById("detalle_descripcion").value = campania.descripcion ?? "";
+  document.getElementById("detalle_fecha_inicio").value = campania.fechaInicio ?? "";
+  document.getElementById("detalle_fecha_fin").value = campania.fechaFin ?? "";
+  document.getElementById("detalle_presupuesto").value = campania.presupuesto ?? "";
+  document.getElementById("detalle_estado").value = campania.estado ?? "";
+}
+
+document.getElementById("btnActualizarEstado").addEventListener("click", async () => {
+  const idCampania = document.getElementById("detalle_id").value;
+  const nuevoEstado = document.getElementById("detalle_estado").value.trim();
+
+  if (!idCampania) {
+    alert("Seleccione una campaña válida.");
+    return;
+  }
+
+  if (!nuevoEstado) {
+    alert("Ingrese un estado válido.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_CAMPANIAS}/${idCampania}/estado`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ estado: nuevoEstado })
+    });
+
+    if (!res.ok) throw new Error("No se pudo actualizar el estado");
+
+    const campaniaActualizada = await res.json();
+
+    // Actualizar datos locales y refrescar tabla y detalle
+    const index = campaniasData.findIndex(c => c.id == idCampania);
+    if (index !== -1) campaniasData[index] = campaniaActualizada;
+
+    mostrarCampanias(campaniasData);
+    mostrarDetalle(campaniaActualizada);
+
+    alert("Estado actualizado correctamente.");
+
+  } catch (error) {
+    console.error(error);
+    alert("Error al actualizar el estado.");
+  }
+});
+
+
+
+function actualizarEstadisticas() {
+  const total = campaniasData.length;
+  const activas = campaniasData.filter(
+    c => (c.estado || '').toLowerCase().includes('activa')
+  ).length;
+
+  const porcentaje = total ? Math.round((activas / total) * 100) : 0;
+  document.getElementById('porcentaje-activa').textContent = porcentaje + '%';
+}
+
+document.getElementById("buscar_campania").addEventListener("input", () => {
+  const txt = document.getElementById("buscar_campania").value.toLowerCase();
+  if (!txt) {
+    mostrarCampanias(campaniasData);
+    return;
+  }
+  const filtradas = campaniasData.filter(c => {
+    const cadena =
+      `${c.id_campania} ${c.id_cliente} ${c.cliente?.nombre ?? ""} ${c.nombre ?? ""} ${c.descripcion ?? ""} ${c.estado ?? ""}`
+        .toLowerCase();
+    return cadena.includes(txt);
+  });
+  mostrarCampanias(filtradas);
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  cargarUsuarioDesdeLocalStorage();
+  cargarCampanias();
+});
+</script>
+
+
+</body>
+</html>
